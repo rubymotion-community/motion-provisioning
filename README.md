@@ -17,7 +17,7 @@ the following tasks in the Developer Portal for you:
 - Creates development, distribution and adhoc profiles.
 - Registers iOS devices.
 
-[gif]
+![motion-provisioning in the terminal](img/motion-provisioning.gif)
 
 ## Installation
 
