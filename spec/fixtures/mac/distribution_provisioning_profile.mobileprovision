@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AppIDName</key>
+	<string>testIOS</string>
+	<key>ApplicationIdentifierPrefix</key>
+	<array>
+	<string>98ZHTS9H6G</string>
+	</array>
+	<key>CreationDate</key>
+	<date>2016-07-12T13:56:47Z</date>
+	<key>Platform</key>
+	<array>
+		<string>iOS</string>
+	</array>
+	<key>DeveloperCertificates</key>
+	<array>
+          <data>{certificate}</data>
+	</array>
+	<key>Entitlements</key>
+	<dict>
+		<key>keychain-access-groups</key>
+		<array>
+			<string>98ZHTS9H6G.*</string>		
+		</array>
+		<key>get-task-allow</key>
+		<false/>
+		<key>application-identifier</key>
+		<string>98ZHTS9H6G.com.hipbyte.test-app5</string>
+		<key>com.apple.developer.team-identifier</key>
+		<string>98ZHTS9H6G</string>
+		<key>beta-reports-active</key>
+		<true/>
+	</dict>
+	<key>ExpirationDate</key>
+	<date>2016-12-17T12:58:30Z</date>
+	<key>Name</key>
+	<string>(MotionProvisioning) com.hipbyte.test-app5 distribution</string>
+	<key>TeamIdentifier</key>
+	<array>
+		<string>98ZHTS9H6G</string>
+	</array>
+	<key>TeamName</key>
+	<string>HipByte SPRL</string>
+	<key>TimeToLive</key>
+	<integer>157</integer>
+	<key>UUID</key>
+	<string>4300ccec-46db-4407-9447-e248cbde59dc</string>
+	<key>Version</key>
+	<integer>1</integer>
+</dict>
+</plist>

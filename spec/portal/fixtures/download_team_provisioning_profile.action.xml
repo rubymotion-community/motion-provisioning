@@ -1,0 +1,132 @@
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>provisioningProfile</key>
+		<dict>
+			<key>provisioningProfileId</key>
+			<string>FB8594WWQG</string>
+			<key>name</key>
+			<string>iOS Team Provisioning Profile: com.mark.ios-app</string>
+			<key>status</key>
+			<string>Active</string>
+			<key>type</key>
+			<string>iOS Development</string>
+			<key>distributionMethod</key>
+			<string>limited</string>
+			<key>proProPlatform</key>
+			<string>ios</string>
+			<key>UUID</key>
+			<string>d14dff58-0d3e-4a6b-b869-bbc7560022d3</string>
+			<key>version</key>
+			<string>2</string>
+			<key>dateExpire</key>
+			<date>2017-08-02T21:08:10Z</date>
+			<key>managingApp</key>
+			<string>Xcode</string>
+			<key>appId</key>
+			<dict>
+				<key>appIdId</key>
+				<string>V6EEQJZ5CX</string>
+				<key>name</key>
+				<string>XC com mark ios-app</string>
+				<key>appIdPlatform</key>
+				<string>ios</string>
+				<key>prefix</key>
+				<string>98ZHTS9H6G</string>
+				<key>identifier</key>
+				<string>com.mark.ios-app</string>
+				<key>isWildCard</key>
+				<false />
+				<key>isDuplicate</key>
+				<false />
+				<key>features</key>
+				<dict>
+					<key>push</key>
+					<true />
+					<key>iCloud</key>
+					<true />
+					<key>inAppPurchase</key>
+					<true />
+					<key>gameCenter</key>
+					<true />
+					<key>LPLF93JG7M</key>
+					<false />
+					<key>passbook</key>
+					<true />
+					<key>IAD53UNK2F</key>
+					<true />
+					<key>V66P55NK2I</key>
+					<true />
+					<key>dataProtection</key>
+					<string>complete</string>
+					<key>SKC3T5S89Y</key>
+					<true />
+					<key>APG3427HIY</key>
+					<true />
+					<key>HK421J6T7P</key>
+					<true />
+					<key>homeKit</key>
+					<true />
+					<key>WC421J6T7P</key>
+					<true />
+					<key>cloudKitVersion</key>
+					<integer>2</integer>
+				</dict>
+				<key>enabledFeatures</key>
+				<array>
+					<string>WC421J6T7P</string>
+					<string>IAD53UNK2F</string>
+					<string>SKC3T5S89Y</string>
+					<string>iCloud</string>
+					<string>APG3427HIY</string>
+					<string>passbook</string>
+					<string>gameCenter</string>
+					<string>homeKit</string>
+					<string>HK421J6T7P</string>
+					<string>dataProtection</string>
+					<string>inAppPurchase</string>
+					<string>push</string>
+					<string>V66P55NK2I</string>
+				</array>
+				<key>isDevPushEnabled</key>
+				<false />
+				<key>isProdPushEnabled</key>
+				<false />
+			</dict>
+			<key>appIdId</key>
+			<string>V6EEQJZ5CX</string>
+			<key>devices</key>
+			<array />
+			<key>deviceIds</key>
+			<array />
+			<key>certificates</key>
+			<array />
+			<key>certificateIds</key>
+			<array />
+			<key>encodedProfile</key>
+                        <data>{profile}</data>
+			<key>filename</key>
+			<string>iOS_Team_Provisioning_Profile_commarkiosapp.mobileprovision</string>
+			<key>isTemplateProfile</key>
+			<false />
+			<key>isTeamProfile</key>
+			<true />
+			<key>isFreeProvisioningProfile</key>
+			<false />
+		</dict>
+		<key>creationTimestamp</key>
+		<string>2016-08-02T21:08:10Z</string>
+		<key>resultCode</key>
+		<integer>0</integer>
+		<key>userLocale</key>
+		<string>en_US</string>
+		<key>protocolVersion</key>
+		<string>QH65B2</string>
+		<key>requestId</key>
+		<string>30469AA6-67D4-4B37-A8F1-1FA58A63CFA5</string>
+		<key>requestUrl</key>
+		<string>https://developerservices2.apple.com:443/services/QH65B2/ios/downloadTeamProvisioningProfile.action?clientId=XABBG36SBA</string>
+		<key>responseId</key>
+		<string>4a15a965-5cec-4ee5-9ab0-1ad766684182</string>
+	</dict>
+</plist>

@@ -1,0 +1,59 @@
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>certRequest</key>
+		<dict>
+			<key>certRequestId</key>
+			<string>HHNK73WK96</string>
+			<key>statusCode</key>
+			<integer>1</integer>
+			<key>statusString</key>
+			<string>Approved</string>
+			<key>csrPlatform</key>
+			<string>ios</string>
+			<key>dateRequestedString</key>
+			<string>Aug 02, 2016</string>
+			<key>dateRequested</key>
+			<string>2016-08-02T18:46:17Z</string>
+			<key>certificateId</key>
+			<string>{certificate_id}</string>
+			<key>typeString</key>
+			<string>iOS Development</string>
+			<key>certificateType</key>
+			<dict>
+				<key>certificateTypeDisplayId</key>
+                                <string>{certificate_type_id}</string>
+				<key>name</key>
+				<string>iOS Development</string>
+				<key>platform</key>
+				<string>ios</string>
+				<key>permissionType</key>
+				<string>development</string>
+				<key>distributionType</key>
+				<string>development</string>
+				<key>distributionMethod</key>
+				<string>app</string>
+				<key>ownerType</key>
+				<string>teamMember</string>
+				<key>daysOverlap</key>
+				<integer>364</integer>
+				<key>maxActive</key>
+				<integer>1</integer>
+			</dict>
+			<key>certContent</key>
+			<data>{cert_content}</data>
+		</dict>
+		<key>creationTimestamp</key>
+		<string>2016-08-02T18:46:18Z</string>
+		<key>resultCode</key>
+		<integer>0</integer>
+		<key>userLocale</key>
+		<string>en_US</string>
+		<key>protocolVersion</key>
+		<string>QH65B2</string>
+		<key>requestUrl</key>
+		<string>https://developerservices2.apple.com:443/services/QH65B2/ios/submitDevelopmentCSR.action?clientId=XABBG36SBA&amp;teamId=29HMR5D877</string>
+		<key>responseId</key>
+		<string>f03b3179-8e2a-41e7-af4c-9c129f02969c</string>
+	</dict>
+</plist>

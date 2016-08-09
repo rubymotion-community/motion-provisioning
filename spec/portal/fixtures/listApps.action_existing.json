@@ -1,0 +1,49 @@
+{
+    "creationTimestamp": "2015-04-07T10:24:02Z",
+    "resultCode": 0,
+    "userLocale": "en_US",
+    "protocolVersion": "QH65B2",
+    "requestId": null,
+    "requestUrl": "https://developer.apple.com:443//services-account/QH65B2/account/ios/identifiers/listAppIds.action",
+    "responseId": "0d35cf9b-fe1e-4420-b94b-71dce02c2aaa",
+    "isAdmin": true,
+    "isMember": false,
+    "isAgent": true,
+    "pageNumber": 0,
+    "pageSize": 0,
+    "totalRecords": 25,
+    "appIds": [
+        {
+            "appIdId": "L42E9BTRAB",
+            "name": "SunApps",
+            "appIdPlatform": "ios",
+            "prefix": "5A997XSHK2",
+            "identifier": "com.example.myapp2",
+            "isWildCard": true,
+            "isDuplicate": false,
+            "features": { "HK421J6T7P": true },
+            "enabledFeatures": [ "HK421J6T7P" ],
+            "isDevPushEnabled": null,
+            "isProdPushEnabled": null,
+            "associatedApplicationGroupsCount": null,
+            "associatedCloudContainersCount": null,
+            "associatedIdentifiersCount": null
+        },
+        {
+            "appIdId": "L42E9BTRAA",
+            "name": "SunApps",
+            "appIdPlatform": "ios",
+            "prefix": "5A997XSHK2",
+            "identifier": "com.example.myapp",
+            "isWildCard": true,
+            "isDuplicate": false,
+            "features": { },
+            "enabledFeatures": [ ],
+            "isDevPushEnabled": null,
+            "isProdPushEnabled": null,
+            "associatedApplicationGroupsCount": null,
+            "associatedCloudContainersCount": null,
+            "associatedIdentifiersCount": null
+        }
+    ]
+}

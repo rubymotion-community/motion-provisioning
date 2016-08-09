@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+   <dict>
+      <key>provisioningProfiles</key>
+      <array>
+      </array>
+      <key>creationTimestamp</key>
+      <string>2015-04-03T15:44:09Z</string>
+      <key>resultCode</key>
+      <integer>0</integer>
+      <key>userLocale</key>
+      <string>en_US</string>
+      <key>protocolVersion</key>
+      <string>QH65B2</string>
+      <key>requestUrl</key>
+      <string>https://developerservices2.apple.com:443//services/QH65B2/ios/listProvisioningProfiles.action</string>
+      <key>responseId</key>
+      <string>ff889a0b-8070-4600-ad12-03268f1ffaaa</string>
+      <key>pageNumber</key>
+      <integer>0</integer>
+      <key>pageSize</key>
+      <integer>0</integer>
+      <key>totalRecords</key>
+      <integer>58</integer>
+   </dict>
+</plist>

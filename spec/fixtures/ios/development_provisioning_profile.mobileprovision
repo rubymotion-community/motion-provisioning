@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AppIDName</key>
+	<string>testIOS</string>
+	<key>ApplicationIdentifierPrefix</key>
+	<array>
+	<string>98ZHTS9H6G</string>
+	</array>
+	<key>CreationDate</key>
+	<date>2016-07-13T22:23:40Z</date>
+	<key>Platform</key>
+	<array>
+		<string>iOS</string>
+	</array>
+	<key>DeveloperCertificates</key>
+	<array>
+          <data>{certificate}</data>
+	</array>
+	<key>Entitlements</key>
+	<dict>
+		<key>keychain-access-groups</key>
+		<array>
+			<string>98ZHTS9H6G.*</string>		
+		</array>
+		<key>get-task-allow</key>
+		<true/>
+		<key>application-identifier</key>
+		<string>98ZHTS9H6G.com.hipbyte.test-app5</string>
+		<key>com.apple.developer.team-identifier</key>
+		<string>98ZHTS9H6G</string>
+	</dict>
+	<key>ExpirationDate</key>
+	<date>2017-07-13T22:23:40Z</date>
+	<key>Name</key>
+	<string>(MotionProvisioning) com.hipbyte.test-app5 development</string>
+	<key>ProvisionedDevices</key>
+	<array>
+		<string>5f37ceea4500c7401aabd43178c9ff0c640ae0dd</string>
+		<string>2413ca3f09f8f7ac29e21a88bfd0b22ea05f44bb</string>
+		<string>581fb5d8cf0bb951fba22c2dcc07a344df58b53e</string>
+		<string>fedfbe8a73a06c093e890486fd509c08d4526821</string>
+		<string>0ca71e41424fb17d970f4bf04a59a5099ab3b9df</string>
+		<string>8c4cd4b18e87f19a334703bc87a67caddc8516f8</string>
+		<string>baf9812f082ed79b1d426a8790800e44752676fa</string>
+	</array>
+	<key>TeamIdentifier</key>
+	<array>
+		<string>98ZHTS9H6G</string>
+	</array>
+	<key>TeamName</key>
+	<string>HipByte SPRL</string>
+	<key>TimeToLive</key>
+	<integer>365</integer>
+	<key>UUID</key>
+	<string>32d76bd8-c8c2-4279-8f8a-2aa77728327f</string>
+	<key>Version</key>
+	<integer>1</integer>
+</dict>
+</plist>
