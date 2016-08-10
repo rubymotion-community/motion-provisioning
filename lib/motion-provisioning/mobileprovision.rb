@@ -14,15 +14,6 @@ module MotionProvisioning
       self.certificates = []
       self.enabled_services = []
 
-      entitlements_keys = hash['Entitlements'].keys
-      Service.constants.each do |constant_name|
-        service = Service.const_get(constant_name)
-        keys = service.mobileprovision_keys
-        if (keys - entitlements_keys).empty?
-          self.enabled_services << service
-        end
-      end
-
       hash['DeveloperCertificates'].each do |certificate|
         self.certificates << certificate.read
       end
