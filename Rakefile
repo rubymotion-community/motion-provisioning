@@ -7,7 +7,7 @@ task :generate_certificates do
     # Create the root certs
     `openssl genrsa -out rootCA.p12 2048`
     `openssl req -x509 -new -nodes -key rootCA.p12 -sha256 -days 1024 -out rootCA.pem -subj "/C=US/ST=California/L=San Francisco/O=Apple Inc./OU=IT Department/CN=MotionProvisioning ROOT"`
-    `security add-trusted-cert -k "#{Dir.home}/Library/Keychains/login.keychain" rootCA.pem`
+    `sudo security add-trusted-cert -d -k "#{Dir.home}/Library/Keychains/login.keychain" rootCA.pem`
     `security import rootCA.pem`
 
     [:ios, :mac].each do |platform|
