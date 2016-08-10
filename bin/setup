@@ -4,5 +4,5 @@ IFS=$'\n\t'
 set -vx
 
 bundle install
-rake generae_certificates
+rake generate_certificates
 
