@@ -14,6 +14,15 @@ module MotionProvisioning
       self.certificates = []
       self.enabled_services = []
 
+      entitlements_keys = hash['Entitlements'].keys
+      Service.constants.each do |constant_name|
+        service = Service.const_get(constant_name)
+        keys = service.mobileprovision_keys
+        if (keys - entitlements_keys).empty?
+          self.enabled_services << service
+        end
+      end
+
       hash['DeveloperCertificates'].each do |certificate|
         self.certificates << certificate.read
       end
@@ -34,6 +43,34 @@ module MotionProvisioning
     # @return Boolean
     def valid?(certificate, app_entitlements)
       return false if hash['ExpirationDate'] < DateTime.now
+
+      entitlements = hash['Entitlements']
+      # Remove entitlements that are not relevant for
+      # Always true in development mobileprovision
+      entitlements.delete('get-task-allow')
+      # Always true in distribution mobileprovision
+      entitlements.delete('beta-reports-active')
+      entitlements.delete('application-identifier')
+      entitlements.delete('com.apple.developer.team-identifier')
+      # Always present, usually "$teamidentifier.*"
+      entitlements.delete('keychain-access-groups')
+      entitlements.delete('aps-environment')
+
+      if app_entitlements != entitlements
+        missing_in_app = entitlements.to_a - app_entitlements.to_a
+        if missing_in_app.any?
+          Utils.log("Error", "These entitlements are present in the provisioning profile but not in your app configuration:")
+          puts missing_in_app
+        end
+
+        missing_in_profile = app_entitlements.to_a - entitlements.to_a
+        if missing_in_profile.any?
+          Utils.log("Error", "These entitlements are present in your app configuration but not in your provisioning profile:")
+          puts missing_in_profile
+        end
+
+        return false
+      end
 
       if !certificates.include?(File.read(certificate))
         Utils.log("Warning", "Your provisioning profile does not include your certificate. Repairing...")

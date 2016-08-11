@@ -23,6 +23,30 @@ module MotionProvisioning
         end
       end
 
+      services = MotionProvisioning.services
+
+      Disable all app services not enabled via entitlements
+      app.enabled_features.each do |feature_id|
+        # These services are always enabled and cannot be disabled
+        next if ['inAppPurchase', 'gameCenter', 'push'].include?(feature_id)
+        service = services.detect { |s| s.identifier == feature_id }
+        if service.nil?
+          Utils.log('Info', "Disabling unused app service '#{feature_id}' for '#{bundle_id}'")
+          # To disable Data Protection we need to send an empty string as value
+          value = feature_id == 'dataProtection' ? '' : false
+          app.update_service(Spaceship::Portal::AppService.new(feature_id, value))
+        end
+      end
+
+      # Enable all app services enabled via entitlements (or which have a different value)
+      services.each do |service|
+        value = service.identifier == 'dataProtection' ? 'complete' : true
+        if app.features[service.identifier] != value
+          Utils.log('Info', "Enabling app service '#{service.name.split("::").last}' for '#{bundle_id}'")
+          app.update_service(Spaceship::Portal::AppService.new(service.identifier, value))
+        end
+      end
+
       app
     end
   end
