@@ -282,7 +282,7 @@ module MotionProvisioning
 
     def private_key(name, fingerprint, password)
       export_private_key = File.join(File.expand_path(__dir__), '../../bin/export_private_key')
-      `#{export_private_key} #{name} #{fingerprint} #{password}`.strip
+      `#{export_private_key} "#{name}" "#{fingerprint}" "#{password}"`.strip
     end
   end
 end
