@@ -50,8 +50,6 @@ def delete_certificate(name)
   `security delete-certificate -c "#{name}" #{$keychain} 2>&1`
 end
 
-$test_mode = true
-
 SPEC_CERTIFICATES = {
   ios: {
     development: {

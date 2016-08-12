@@ -28,6 +28,7 @@ describe "Certificates" do
 
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{platform}_#{type}_private_key.p12")
 
+            allow(STDIN).to receive(:gets).and_return("\n")
             expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq(certificate[:name])
           end
 
@@ -39,6 +40,7 @@ describe "Certificates" do
             stub_request_certificate(csr.to_s, type)
             stub_download_certificate(type)
 
+            allow(STDIN).to receive(:gets).and_return('y', "\n")
             expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq(certificate[:name])
           end
 

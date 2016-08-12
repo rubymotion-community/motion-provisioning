@@ -80,7 +80,7 @@ module MotionProvisioning
         Utils.log("Error", "None of the available certificates (#{user_certificates.count}) is installed on the local machine. Revoking...")
 
         # For distribution, ask before revoking
-        if self.type == :distribution && !$test_mode
+        if self.type == :distribution
           answer = Utils.ask("Info", "There are #{user_certificates.count} distribution certificates in your account, but none installed locally.\n" \
                     "Before revoking and creating a new one, ask other team members who might have them installed to share them with you.\n" \
                     "Do you want to continue revoking the certificates? (Y/n):")
@@ -208,7 +208,7 @@ module MotionProvisioning
       else
         Utils.log("Warning", "You have just created a development certificate. If you want to use this certificate on another machine, transfer the private key (.p12) and certificate (.cer) files in your /provisioning folder and install them in the keychain.")
       end
-      Utils.ask("Info", "Press any key to continue...") if !$test_mode
+      Utils.ask("Info", "Press any key to continue...")
 
       return cert_path
     end
