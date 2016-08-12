@@ -110,10 +110,6 @@ module MotionProvisioning
 
         password = Utils.ask_password("Info", "Exporting private key from Keychain for certificate '#{installed_certificate.name}'. Choose a password (you will be asked for this password when importing this key into the Keychain in another machine):")
         private_key_contents = private_key(common_name(path), sha1_fingerprint(path), password)
-        if private_key_contents.empty?
-          Utils.log("Error", "Could not export private key for certificate '#{installed_certificate.name}'.")
-          abort
-        end
         File.write(private_key_path, private_key_contents)
 
         # This certificate is installed on the local machine
