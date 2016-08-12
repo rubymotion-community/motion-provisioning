@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/HipByte/motion-provisioning"
   spec.license       = "BSD"
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features|img)/}) }
+  spec.files = Dir.glob("lib/**/*", File::FNM_DOTMATCH) + %w(bin/export_private_key LICENSE.txt README.md)
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'spaceship', '~> 0.30'
