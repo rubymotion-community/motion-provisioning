@@ -239,7 +239,7 @@ def stub_request_certificate(csr, type)
   [:ios, :mac].each do |platform|
     certificate = SPEC_CERTIFICATES[platform][type]
     stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform}/certificate/submitCertificateRequest.action").
-      with(:body => {"appIdId"=>true, "csrContent"=>csr, "teamId"=>"XXXXXXXXXX", "type"=>certificate[:type_id]}).
+      with(:body => {"appIdId"=>nil, "csrContent"=>csr, "teamId"=>"XXXXXXXXXX", "type"=>certificate[:type_id]}).
       to_return(status: 200, body: adp_read_fixture_file('submitCertificateRequest.action.json').gsub("{certificate_type_id}", certificate[:type_id]).gsub("{certificate_id}", certificate[:id]), headers: { 'Content-Type' => 'application/json' })
 
      stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform}/submitDevelopmentCSR.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
