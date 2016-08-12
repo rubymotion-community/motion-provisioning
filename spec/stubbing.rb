@@ -204,6 +204,10 @@ def stub_revoke_certificate(type)
     stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/revokeCertificate.action").
       with(:body => {"certificateId"=>certificate[:id], "teamId"=>"XXXXXXXXXX", "type"=>certificate[:type_id]}).
       to_return(status: 200, body: adp_read_fixture_file('revokeCertificate.action.json'), headers: { 'Content-Type' => 'application/json' })
+
+    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/ios/revokeDevelopmentCert.action?clientId=XABBG36SBA").
+      with(:body => { "serialNumber" => "EA57CB138947BCB", "teamId" => "XXXXXXXXXX" }.to_plist).
+      to_return(:status => 200, :body => { "certRequests" => [] }.to_plist, :headers => {})
   end
 end
 
