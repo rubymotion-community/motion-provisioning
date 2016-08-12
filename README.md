@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/HipByte/motion-provisioning.svg?branch=master)](https://travis-ci.org/HipByte/motion-provisioning)
+
 # MotionProvisioning
 
 Simplified provisioning for RubyMotion iOS, tvOS and macOS apps.
