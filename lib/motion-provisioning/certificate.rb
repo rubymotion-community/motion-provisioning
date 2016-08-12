@@ -104,8 +104,13 @@ module MotionProvisioning
         end
       # There are certificates on the server, and one of them is installed locally.
       else
+        Utils.log("Info", "Found certificate '#{installed_certificate.name}' which is installed in the local machine.")
+
         path = store_certificate_raw(installed_certificate.motionprovisioning_certContent ||installed_certificate.download_raw)
-        private_key_path = File.expand_path(File.join(output_path, "#{installed_certificate.id}.p12"))
+
+        password = Utils.ask_password("Info", "Exporting private key from Keychain for certificate '#{installed_certificate.name}'. Choose a password (you will be asked for this password when importing this key into the Keychain in another machine):")
+        private_key_contents = private_key(common_name(path), sha1_fingerprint(path), password)
+        File.write(private_key_path, private_key_contents)
 
         # This certificate is installed on the local machine
         Utils.log("Info", "Using certificate '#{installed_certificate.name}'.")
@@ -273,6 +278,11 @@ module MotionProvisioning
       command << " -T /usr/bin/security"
 
       `#{command} 2>&1`
+    end
+
+    def private_key(name, fingerprint, password)
+      export_private_key = File.join(File.expand_path(__dir__), '../../bin/export_private_key')
+      `#{export_private_key} #{name} #{fingerprint} #{password}`.strip
     end
   end
 end

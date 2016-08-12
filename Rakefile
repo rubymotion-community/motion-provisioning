@@ -25,6 +25,13 @@ def generate_certificate(platform, type)
   `openssl x509 -req -extfile openssl.conf -extensions 'my server exts' -in #{platform}_#{type}.csr -CA rootCA.pem -CAkey rootCA.p12 -CAcreateserial -outform der -out #{platform}_#{type}_certificate.cer -days 500 -sha256`
 end
 
+task :build_export_private_key do
+  Dir.chdir('export_private_key') do
+    system('clang -framework Security -framework CoreFoundation export_private_key.c -o export_private_key')
+    FileUtils.mv('export_private_key', '../bin/')
+  end
+end
+
 # Run this from time to time to ensure everything is running in the Real World
 # like expected.
 desc "Create all types of certificates and profiles using a real developer account."

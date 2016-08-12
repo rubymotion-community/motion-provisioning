@@ -5,4 +5,5 @@ set -vx
 
 bundle install
 rake generate_certificates
+rake build_export_private_key
 

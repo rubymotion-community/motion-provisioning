@@ -51,7 +51,11 @@ describe "Certificates" do
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{platform}_#{type}_certificate.cer")
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{platform}_#{type}_private_key.p12")
 
+            allow($stderr).to receive(:noecho).and_yield
+            allow(STDIN).to receive(:getc).and_return('1', '2', '3', "\n")
             expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq(certificate[:name])
+            expect(File.exist?("provisioning/#{platform}_#{type}_certificate.cer")).to be true
+            expect(File.exist?("provisioning/#{platform}_#{type}_private_key.p12")).to be true
           end
 
           it "can use cached certificate that is not installed" do

@@ -8,3 +8,5 @@ spec/fixtures/*.p12
 spec/fixtures/*.csr
 spec/fixtures/*.pem
 spec/fixtures/*.srl
+
+bin/export_private_key
