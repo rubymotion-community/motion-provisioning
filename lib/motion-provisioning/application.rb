@@ -2,7 +2,7 @@ module MotionProvisioning
   class Application
 
     # Finds or create app for the given bundle id and name
-    def self.find_or_create(bundle_id: nil, name: nil, mac: mac = false)
+    def self.find_or_create(bundle_id: nil, name: nil, mac: false)
       app = Spaceship::Portal::App.find(bundle_id, mac: mac)
       if app
         app = app.details if app.features.nil?
