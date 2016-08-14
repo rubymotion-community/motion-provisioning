@@ -29,7 +29,7 @@ module MotionProvisioning
 
       if File.exist?('.gitignore') && File.read('.gitignore').match(/^provisioning$/).nil?
         answer = Utils.ask("Info", "Do you want to add the 'provisioning' folder fo your '.gitignore' file? (Recommended) (Y/n):")
-        `echo provisioning >> .gitignore` if answer.downcase == 'y'
+        `echo provisioning >> .gitignore` if answer.yes?
       end
 
       client = if free
@@ -44,7 +44,7 @@ module MotionProvisioning
 
       if ENV['MOTION_PROVISIONING_EMAIL'].nil? && !File.exist?(config_path)
         answer = Utils.ask("Info", "Do you want to save the email to the config file ('provisioning/config.yaml') so you dont have to type it again? (Y/n):")
-        if answer.downcase == 'y'
+        if answer.yes?
           FileUtils.mkdir_p(File.expand_path('./provisioning'))
           File.write(config_path, { 'email' => email }.to_yaml)
         end
@@ -69,7 +69,7 @@ module MotionProvisioning
       rescue Spaceship::Client::InvalidUserCredentialsError => ex
         Utils.log("Error", "There was an error logging into your account. Your password may be wrong.")
 
-        if Utils.ask("Info", 'Do you want to reenter your password? (Y/n):').downcase == 'y'
+        if Utils.ask("Info", 'Do you want to reenter your password? (Y/n):').yes?
 
           # The 'delete' method is very verbose, temporarily disable output
           orig_stdout = $stdout.dup
@@ -116,7 +116,7 @@ module MotionProvisioning
 
           if File.exist?(config_path) && ENV['MOTION_PROVISIONING_TEAM_ID'].nil?
             answer = Utils.ask("Info", "Do you want to save the team id (#{team_id}) in the config file ('provisioning/config.yaml') so you dont have to select it again? (Y/n):")
-            if answer.downcase == 'y'
+            if answer.yes?
               config = YAML.load(File.read(config_path))
               config['team_id'] = team_id
               File.write(config_path, config.to_yaml)

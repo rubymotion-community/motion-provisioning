@@ -55,7 +55,7 @@ module MotionProvisioning
           ids.each do |id|
             next if profile_devices.include?(id.downcase)
             answer = Utils.ask("Info", "This computer is connected to an iOS device with ID '#{id}' which is not included in the profile. Do you want to register it? (Y/n):")
-            if answer.downcase == 'y'
+            if answer.yes?
               Utils.log('Info', "Registering device with ID '#{id}'")
               Spaceship::Portal::Device.create!(name: 'iOS Device', udid: id)
               force_repair = true
@@ -66,7 +66,7 @@ module MotionProvisioning
             existing = Spaceship::Portal::Device.find_by_udid(id)
             next if existing
             answer = Utils.ask("Info", "This computer is connected to an iOS device with ID '#{id}' which is not registered in the Developer Portal. Do you want to register it? (Y/n):")
-            if answer.downcase == 'y'
+            if answer.yes?
               Utils.log('Info', "Registering device with ID '#{id}'")
               client.create_device!('iOS Device', id)
             end

@@ -69,7 +69,7 @@ module MotionProvisioning
           answer = Utils.ask("Info", "There are #{certificates.count} distribution certificates in your account, but none installed locally.\n" \
                     "Before revoking and creating a new one, ask other team members who might have them installed to share them with you.\n" \
                     "Do you want to continue revoking the certificates? (Y/n):")
-          abort if answer.downcase != "y"
+          abort if answer.no?
         end
 
         # Revoke all and create new one

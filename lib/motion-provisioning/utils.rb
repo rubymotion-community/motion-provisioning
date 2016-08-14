@@ -1,5 +1,19 @@
 module MotionProvisioning
   module Utils
+    class Answer
+      def initialize(answer)
+        @answer = answer.downcase
+      end
+
+      def yes?
+        @answer == 'y'
+      end
+
+      def no?
+        @answer == 'n'
+      end
+    end
+
     module_function
     def log(what, msg)
       require 'thread'
@@ -17,7 +31,7 @@ module MotionProvisioning
 
       result = $stdin.gets
       result.chomp! if result
-      result
+      Answer.new(result)
     end
 
     def ask_password(what, question)
