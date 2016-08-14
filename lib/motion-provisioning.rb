@@ -6,6 +6,7 @@ require 'date'
 require 'plist'
 require 'security'
 require 'spaceship'
+require 'motion-provisioning/spaceship/portal/certificate'
 require 'motion-provisioning/spaceship/portal_client'
 require 'motion-provisioning/spaceship/free_portal_client'
 
@@ -193,7 +194,6 @@ module MotionProvisioning
     MotionProvisioning.free = opts[:free]
     Certificate.new.certificate_name(opts[:type], opts[:platform])
   end
-
 
   def self.profile(opts = {})
     unless opts[:bundle_identifier]
