@@ -9,12 +9,12 @@ module Spaceship
         appIdId: app_id,
       }
 
-      r = request_plist(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug(mac)}/downloadTeamProvisioningProfile.action", params)
+      r = request_plist(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/downloadTeamProvisioningProfile.action", params)
       parse_response(r, 'provisioningProfile')
     end
 
     def download_provisioning_profile(profile_id, mac: false)
-      r = request_plist(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug(mac)}/downloadProvisioningProfile.action", {
+      r = request_plist(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/downloadProvisioningProfile.action", {
         teamId: team_id,
         provisioningProfileId: profile_id
       })
@@ -26,7 +26,7 @@ module Spaceship
 
     def devices(mac: false)
       paging do |page_number|
-        r = request_plist(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug(mac)}/listDevices.action", {
+        r = request_plist(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/listDevices.action", {
           teamId: team_id,
           pageNumber: page_number,
           pageSize: page_size,
@@ -37,19 +37,18 @@ module Spaceship
     end
 
     def create_device!(device_name, device_id, mac: false)
-      req = request_plist(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/addDevice.action", {
-	teamId: team_id,
-	deviceNumber: device_id,
-	name: device_name
+      r = request_plist(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/addDevice.action", {
+        teamId: team_id,
+        deviceNumber: device_id,
+        name: device_name
       })
 
-      parse_response(req, 'device')
+      parse_response(r, 'device')
     end
 
     def apps(mac: false)
       paging do |page_number|
-
-        r = request_plist(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug(mac)}/listAppIds.action?clientId=XABBG36SBA", {
+        r = request_plist(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/listAppIds.action?clientId=XABBG36SBA", {
           teamId: team_id,
           pageNumber: page_number,
           pageSize: page_size,
@@ -60,7 +59,7 @@ module Spaceship
     end
 
     def details_for_app(app)
-      r = request_plist(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug(app.mac?)}/getAppIdDetail.action", {
+      r = request_plist(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(app.mac?)}/getAppIdDetail.action", {
         teamId: team_id,
         identifier: app.app_id
       })
@@ -76,12 +75,12 @@ module Spaceship
 
       ensure_csrf
 
-      r = request_plist(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug(mac)}/addAppId.action?clientId=XABBG36SBA", params)
+      r = request_plist(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/addAppId.action?clientId=XABBG36SBA", params)
       parse_response(r, 'appId')
     end
 
     def revoke_development_certificate(serial_number, mac: false)
-      r = request_plist(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug(mac)}/revokeDevelopmentCert.action?clientId=XABBG36SBA", {
+      r = request_plist(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/revokeDevelopmentCert.action?clientId=XABBG36SBA", {
         teamId: team_id,
         serialNumber: serial_number,
       })
@@ -91,7 +90,7 @@ module Spaceship
     def create_development_certificate(csr, mac: false)
       ensure_csrf
 
-      r = request_plist(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug(mac)}/submitDevelopmentCSR.action?clientId=XABBG36SBA&teamId=#{team_id}", {
+      r = request_plist(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/submitDevelopmentCSR.action?clientId=XABBG36SBA&teamId=#{team_id}", {
         teamId: team_id,
         csrContent: csr
       })
@@ -112,12 +111,12 @@ module Spaceship
     def request_plist(method, url_or_path = nil, params = nil, headers = {}, &block)
       headers['X-Xcode-Version'] = '7.3.1 (7D1014)'
       headers['Content-Type'] = 'text/x-xml-plist'
-      params = params.to_plist if params
-      headers.merge!(csrf_tokens)
       headers['User-Agent'] = USER_AGENT
-      response = send_request(method, url_or_path, params, headers, &block)
-      return response
-    end
+      headers.merge!(csrf_tokens)
 
+      params = params.to_plist if params
+
+      send_request(method, url_or_path, params, headers, &block)
+    end
   end
 end

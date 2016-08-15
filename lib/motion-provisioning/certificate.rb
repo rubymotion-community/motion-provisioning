@@ -1,17 +1,5 @@
-module Spaceship
-  module Portal
-    class Certificate
-      # The PLIST request for the free certificate returns the certificate content
-      # in the certContent variable. It's stored in this attribute for later use.
-      attr_accessor :motionprovisioning_certContent,
-                    :motionprovisioning_serialNumber
-    end
-  end
-end
-
 module MotionProvisioning
   class Certificate
-
     attr_accessor :type, :output_path, :platform
 
     def client
@@ -41,7 +29,7 @@ module MotionProvisioning
           # The certificate is not installed, so we install the cert and the key
           import_file(private_key_path)
           import_file(certificate_path)
-          name =  common_name(certificate_path)
+          name = common_name(certificate_path)
           Utils.log("Info", "Using certificate '#{name}'.")
           return name
         end
@@ -52,9 +40,6 @@ module MotionProvisioning
 
       # Make sure a client is created and logged in
       client
-
-      # All the certificates for the specified type
-      user_certificates = certificates
 
       # Lets see if any of the user certificates is in the keychain
       installed_certificate = nil
@@ -67,7 +52,7 @@ module MotionProvisioning
       end
 
       # There are no certificates in the server so we create a new one
-      if user_certificates.empty?
+      if certificates.empty?
         Utils.log("Warning", "Couldn't find any existing certificates... creating a new one.")
         if certificate = create_certificate
           return common_name(certificate)
@@ -77,23 +62,23 @@ module MotionProvisioning
         end
       # There are certificates in the server, but none is installed locally. Revoke all and create a new one.
       elsif installed_certificate.nil?
-        Utils.log("Error", "None of the available certificates (#{user_certificates.count}) is installed on the local machine. Revoking...")
+        Utils.log("Error", "None of the available certificates (#{certificates.count}) is installed on the local machine. Revoking...")
 
         # For distribution, ask before revoking
         if self.type == :distribution
-          answer = Utils.ask("Info", "There are #{user_certificates.count} distribution certificates in your account, but none installed locally.\n" \
+          answer = Utils.ask("Info", "There are #{certificates.count} distribution certificates in your account, but none installed locally.\n" \
                     "Before revoking and creating a new one, ask other team members who might have them installed to share them with you.\n" \
                     "Do you want to continue revoking the certificates? (Y/n):")
-          abort if answer.downcase != "y"
+          abort if answer.no?
         end
 
         # Revoke all and create new one
         if MotionProvisioning.free
-          user_certificates.each do |certificate|
+          certificates.each do |certificate|
             client.revoke_development_certificate(certificate.motionprovisioning_serialNumber)
           end
         else
-          user_certificates.each(&:revoke!)
+          certificates.each(&:revoke!)
         end
 
         if certificate = create_certificate
@@ -106,7 +91,7 @@ module MotionProvisioning
       else
         Utils.log("Info", "Found certificate '#{installed_certificate.name}' which is installed in the local machine.")
 
-        path = store_certificate_raw(installed_certificate.motionprovisioning_certContent ||installed_certificate.download_raw)
+        path = store_certificate_raw(installed_certificate.motionprovisioning_certContent || installed_certificate.download_raw)
 
         password = Utils.ask_password("Info", "Exporting private key from Keychain for certificate '#{installed_certificate.name}'. Choose a password (you will be asked for this password when importing this key into the Keychain in another machine):")
         private_key_contents = private_key(common_name(path), sha1_fingerprint(path), password)
@@ -115,7 +100,7 @@ module MotionProvisioning
         # This certificate is installed on the local machine
         Utils.log("Info", "Using certificate '#{installed_certificate.name}'.")
 
-        return common_name(path)
+        common_name(path)
       end
     end
 
@@ -215,7 +200,7 @@ module MotionProvisioning
       end
       Utils.ask("Info", "Press any key to continue...")
 
-      return cert_path
+      cert_path
     end
 
     def store_certificate_raw(raw_data)

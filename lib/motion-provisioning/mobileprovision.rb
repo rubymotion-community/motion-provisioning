@@ -1,7 +1,6 @@
 module MotionProvisioning
   # Represents a .mobileprobision file on disk
   class MobileProvision
-
     attr_accessor :hash, :enabled_services, :certificates
 
     # @param path (String): Path to the .mobileprovision file
@@ -42,6 +41,5 @@ module MotionProvisioning
 
       true
     end
-
   end
 end
