@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/HipByte/motion-provisioning.svg?branch=master)](https://travis-ci.org/HipByte/motion-provisioning)
 
-# MotionProvisioning
+# motion-provisioning
 
 Simplified provisioning for RubyMotion iOS, tvOS and macOS apps.
 
@@ -8,9 +8,9 @@ Getting started with iOS development has a very high barrier. Just
 getting a app and device registered requires you to go through a *very*
 complex web interface at developer.apple.com
 
-MotionProvisioning significantly alleviates the pain of these steps.
+motion-provisioning significantly alleviates the pain of these steps.
 
-By providing your developer account, MotionProvisioning automatically performs
+By providing your developer account, motion-provisioning automatically performs
 the following tasks in the Developer Portal for you:
 
 - Creates an application matching your app's name and bundle
@@ -155,7 +155,7 @@ The distribution certificate (and it's corresponding private key) must
 be shared between all team members who will be creating distribution
 builds.
 
-MotionProvisioning will ask before revoking the existing distribution
+motion-provisioning will ask before revoking the existing distribution
 certificate and creating a new one.
 
 After you create a new distribution certificate, share the
@@ -174,7 +174,7 @@ For example, to recreate the development profile:
 
 ## Entitlements and App Services
 
-MotionProvisioning does not (yet) manage entitlements and app services (like
+motion-provisioning does not (yet) manage entitlements and app services (like
 HealthKit, HomeKit or iCloud). To enable them, you need to go to the Developer
 Portal. Then, recreate your provisioning profile and add the appropriate
 entitlements to the `app.entitlements` hash in your Rakefile.
