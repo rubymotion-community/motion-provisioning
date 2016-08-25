@@ -19,6 +19,8 @@ the following tasks in the Developer Portal for you:
 - Creates development, distribution and adhoc profiles.
 - Registers iOS devices.
 
+For more awesomeness, use motion-provisioning along with [motion-appstore](https://github.com/HipByte/motion-appstore)!
+
 ![motion-provisioning in the terminal](img/motion-provisioning.gif)
 
 ## Installation
