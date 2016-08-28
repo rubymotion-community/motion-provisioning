@@ -42,6 +42,11 @@ def fixture_file(filename)
   File.read(File.join('spec', 'fixtures', filename))
 end
 
+if !`/Library/RubyMotion/bin/ios/deploy -D`.strip.empty?
+  puts "Please disconnect all iOS devices from the computer before running the tests"
+  abort
+end
+
 unless ENV["SPEC_DEBUG"]
   $stdout = $stderr = File.open("/tmp/motion_provisioning_tests", "w")
 end
