@@ -9,10 +9,10 @@ GIT
 PATH
   remote: .
   specs:
-    motion-provisioning (0.0.2)
+    motion-provisioning (0.0.3)
       plist (~> 3.2)
       security (~> 0.1)
-      spaceship (~> 0.30)
+      spaceship (~> 0.31.9)
 
 GEM
   remote: https://rubygems.org/
@@ -75,7 +75,7 @@ GEM
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
-    spaceship (0.31.1)
+    spaceship (0.31.10)
       colored
       credentials_manager (>= 0.16.0)
       faraday (~> 0.9)

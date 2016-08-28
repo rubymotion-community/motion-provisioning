@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir.glob("lib/**/*", File::FNM_DOTMATCH) + %w(bin/export_private_key LICENSE.txt README.md)
   spec.require_paths = ["lib"]
 
-  spec.add_dependency 'spaceship', '~> 0.30'
+  spec.add_dependency 'spaceship', '~> 0.31.9'
   spec.add_dependency 'plist', '~> 3.2'
   spec.add_dependency 'security', '~> 0.1'
   spec.add_development_dependency 'bundler', '~> 1.12'

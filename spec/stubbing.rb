@@ -30,6 +30,12 @@ def stub_login
   stub_request(:get, "https://itunesconnect.apple.com/WebObjects/iTunesConnect.woa/wa/route?noext=true").
     to_return(status: 200, body: "")
 
+  # For CSRF
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/ios/certificate/listCertRequests.action").
+    with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX",
+      "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
+    to_return(:status => 200, :body => adp_read_fixture_file('listCertRequests.action_existing.json'), headers: { 'Content-Type' => 'application/json' })
+
   # Actual login
   stub_request(:post, "https://idmsa.apple.com/appleauth/auth/signin?widgetKey=1234567890").
     with(body: { "accountName" => "foo@example.com", "password" => "password", "rememberMe" => true }.to_json).
@@ -163,11 +169,6 @@ def stub_existing_certificates
     stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listAllDevelopmentCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
       to_return(status: 200, body: adp_read_fixture_file('listAllDevelopmentCerts_existing.xml').gsub('{certificate}', Base64.encode64(SPEC_CERTIFICATES[platform][:development][:content])), headers: { 'Content-Type' => 'text/x-xml-plist' })
 
-stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/mac/certificate/listCertRequests.action").
-         with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"749Y1QAGU7,HXZEUKP0FP,2PQI8IDXNH,OYVN2GW35E,W0EURJRMC5,CDZ7EMXIZ1,HQ4KP3I34R,DIVN2GW3XT"},
-              :headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'Content-Type'=>'application/x-www-form-urlencoded', 'User-Agent'=>'Spaceship 0.27.2'}).
-         to_return(:status => 200, :body => "", :headers => {})
-
      stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
        with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
        to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action_existing.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][:development][:id]).gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][:development][:type_id]), headers: { 'Content-Type' => 'application/json' })
@@ -235,7 +236,6 @@ def stub_missing_certificates
 end
 
 def stub_request_certificate(csr, type)
-  # Mac cert requests are made to the ios url
   [:ios, :mac].each do |platform|
     certificate = SPEC_CERTIFICATES[platform][type]
     stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform}/certificate/submitCertificateRequest.action").

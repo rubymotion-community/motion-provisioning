@@ -16,7 +16,7 @@ module Spaceship
 
     # Fix a bug in Fastlane where the slug is hardcoded to ios
     def create_certificate!(type, csr, app_id = nil)
-      ensure_csrf
+      ensure_csrf(Spaceship::Certificate)
 
       mac = Spaceship::Portal::Certificate::MAC_CERTIFICATE_TYPE_IDS.keys.include?(type)
 

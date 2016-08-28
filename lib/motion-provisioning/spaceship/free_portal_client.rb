@@ -2,7 +2,7 @@ module Spaceship
   class FreePortalClient < Spaceship::PortalClient
 
     def create_provisioning_profile!(name, distribution_method, app_id, certificate_ids, device_ids, mac: false, sub_platform: nil)
-      ensure_csrf
+      ensure_csrf(Spaceship::App)
 
       params = {
         teamId: team_id,
@@ -73,7 +73,7 @@ module Spaceship
         teamId: team_id
       }
 
-      ensure_csrf
+      ensure_csrf(Spaceship::App)
 
       r = request_plist(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/addAppId.action?clientId=XABBG36SBA", params)
       parse_response(r, 'appId')
@@ -88,7 +88,7 @@ module Spaceship
     end
 
     def create_development_certificate(csr, mac: false)
-      ensure_csrf
+      ensure_csrf(Spaceship::Certificate)
 
       r = request_plist(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/submitDevelopmentCSR.action?clientId=XABBG36SBA&teamId=#{team_id}", {
         teamId: team_id,
@@ -99,14 +99,6 @@ module Spaceship
     end
 
     private
-
-    def ensure_csrf
-      if csrf_tokens.count == 0
-        # If we directly create a new resource (e.g. app) without querying anything before
-        # we don't have a valid csrf token, that's why we have to do at least one request
-        teams
-      end
-    end
 
     def request_plist(method, url_or_path = nil, params = nil, headers = {}, &block)
       headers['X-Xcode-Version'] = '7.3.1 (7D1014)'
