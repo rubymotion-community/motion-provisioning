@@ -38,7 +38,7 @@ module MotionProvisioning
         Spaceship::PortalClient.new
       end
 
-      email = ENV['MOTION_PROVISIONING_EMAIL'] || MotionProvisioning.config['email'] || Utils.ask("Info", "Your Apple ID email:")
+      email = ENV['MOTION_PROVISIONING_EMAIL'] || MotionProvisioning.config['email'] || Utils.ask("Info", "Your Apple ID email:").answer
 
       config_path = File.expand_path('./provisioning/config.yaml')
 
