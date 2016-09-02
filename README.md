@@ -167,12 +167,12 @@ folder with your team members.
 ## Recreate certificates and profiles
 
 Once the certificates and profiles are cached in the `provisioning`
-folder, if you want to re-create them, set the `recreate_profiles` or
-`recreate_certificates` env variable.
+folder, if you want to re-create them, set the `recreate_profile` or
+`recreate_certificate` env variable.
 
 For example, to recreate the development profile:
 
-    rake device recreate_profiles=1
+    rake device recreate_profile=1
 
 ## Entitlements and App Services
 
