@@ -1,6 +1,8 @@
 module MotionProvisioning
   module Utils
     class Answer
+      attr_reader :answer
+
       def initialize(answer)
         @answer = answer.downcase
       end
