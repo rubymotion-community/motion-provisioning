@@ -31,19 +31,19 @@ def stub_login
     to_return(status: 200, body: "")
 
   # For CSRF
-  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/ios/certificate/listCertRequests.action").
-    with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX",
-      "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
-    to_return(:status => 200, :body => adp_read_fixture_file('listCertRequests.action_existing.json'), headers: { 'Content-Type' => 'application/json' })
+  body = adp_read_fixture_file('listProvisioningProfiles.action_existing.plist').gsub("{platform}", 'ios')
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/ios/profile/listProvisioningProfiles.action?pageNumber=1&pageSize=1&sort=name=asc&teamId=XXXXXXXXXX").
+    to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
 
   # Actual login
   stub_request(:post, "https://idmsa.apple.com/appleauth/auth/signin?widgetKey=1234567890").
     with(body: { "accountName" => "foo@example.com", "password" => "password", "rememberMe" => true }.to_json).
     to_return(status: 200, body: '{}', headers: { 'Set-Cookie' => "myacinfo=abcdef;" })
 
-  stub_request(:get, "https://developer.apple.com/account/").
-    to_return(status: 200, body: nil,
-    headers: { 'Location' => "https://idmsa.apple.com/IDMSWebAuth/login?&appIdKey=aaabd3417a7776362562d2197faaa80a8aaab108fd934911bcbea0110d07faaa&path=%2F%2Fmembercenter%2Findex.action" })
+  # Failed login attempts
+  stub_request(:post, "https://idmsa.apple.com/appleauth/auth/signin?widgetKey=1234567890").
+    with(body: { "accountName" => "bad-username", "password" => "bad-password", "rememberMe" => true }.to_json).
+    to_return(status: 401, body: '{}', headers: { 'Set-Cookie' => 'session=invalid' })
 
   stub_request(:post, 'https://developerservices2.apple.com/services/QH65B2/listTeams.action').
     to_return(status: 200, body: adp_read_fixture_file('listTeams.action.json'), headers: { 'Content-Type' => 'application/json' })
@@ -79,7 +79,7 @@ def stub_repair_profile(type, platform)
   distribution_type = case type
                       when :distribution then "store"
                       when :development then "limited"
-                      when :adhoc then "adhoc"
+                      when :adhoc then "store"
                       end
   certificate_type = type == :development ? :development : :distribution
 
@@ -101,10 +101,17 @@ end
 def stub_download_profile(type, platform)
   platform_slug = platform == :mac ? 'mac' : 'ios'
   profile_content = adp_read_fixture_file("downloaded_provisioning_profile.mobileprovision")
+  certificate_type = type == :development ? :development : :distribution
 
   profile_id = 'FB8594WWQG'
   stub_request(:get, "https://developer.apple.com/services-account/QH65B2/account/#{platform_slug}/profile/downloadProfileContent?provisioningProfileId=#{profile_id}&&teamId=XXXXXXXXXX").
     to_return(status: 200, body: profile_content)
+
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform_slug}/profile/getProvisioningProfile.action").
+    with(:body => {"provisioningProfileId"=>profile_id, "teamId"=>"XXXXXXXXXX"}).
+    to_return(status: 200, body: adp_read_fixture_file('getProvisioningProfile.action.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][certificate_type][:id]), headers: { 'Content-Type' => 'application/json' })
+
+    # to_return(status: 200, body: adp_read_fixture_file("download_team_provisioning_profile.action.xml").gsub("{profile}", Base64.encode64(profile_content)), headers: { 'Content-Type' => 'text/x-xml-plist' })
 
   stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug}/downloadProvisioningProfile.action").
     with(:body => { provisioningProfileId: profile_id, teamId: 'XXXXXXXXXX' }.to_plist).
@@ -121,6 +128,10 @@ def stub_list_existing_profiles(type, platform)
   if platform == :tvos
     body.gsub!("<string>ios</string>", "<string>tvOS</string>")
   end
+
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform_slug}/profile/listProvisioningProfiles.action?pageNumber=1&pageSize=1&sort=name=asc&teamId=XXXXXXXXXX").
+    to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
+
   stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug}/listProvisioningProfiles.action?includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
     to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
 end
@@ -131,12 +142,19 @@ def stub_list_invalid_profiles(type, platform)
   if platform == :tvos
     body.gsub!("<string>ios</string>", "<string>tvOS</string>")
   end
-  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{normalized_platform.to_s}/listProvisioningProfiles.action?includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
+
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{normalized_platform}/profile/listProvisioningProfiles.action?pageNumber=1&pageSize=1&sort=name=asc&teamId=XXXXXXXXXX").
+    to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
+
+  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{normalized_platform}/listProvisioningProfiles.action?includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
     to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
 end
 
 def stub_list_missing_profiles(type, platform)
   platform_slug = platform == :mac ? 'mac' : 'ios'
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform_slug}/profile/listProvisioningProfiles.action?pageNumber=1&pageSize=1&sort=name=asc&teamId=XXXXXXXXXX").
+    to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action.plist'), headers: { 'Content-Type' => 'text/x-xml-plist' })
+
   stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug}/listProvisioningProfiles.action?includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
     to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action.plist'), headers: { 'Content-Type' => 'text/x-xml-plist' })
 end
@@ -192,6 +210,10 @@ def stub_missing_then_existing_certificates
     stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/downloadDistributionCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
       to_return(status: 200, body: adp_read_fixture_file('downloadDistributionCerts_existing.xml').gsub('{certificate}', Base64.encode64(SPEC_CERTIFICATES[:ios][:distribution][:content])), headers: { 'Content-Type' => 'text/x-xml-plist' })
 
+    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
+      with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
+      to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][:development][:id]).gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][:development][:type_id]), headers: { 'Content-Type' => 'application/json' })
+
     stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listAllDevelopmentCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
       to_return(status: 200, body: adp_read_fixture_file('listAllDevelopmentCerts_missing.xml'), headers: { 'Content-Type' => 'text/x-xml-plist' }).
       then.
@@ -226,6 +248,10 @@ def stub_missing_certificates
       to_return(status: 200, body: adp_read_fixture_file('downloadDistributionCerts_missing.xml'), headers: { 'Content-Type' => 'text/x-xml-plist' })
     stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listAllDevelopmentCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
       to_return(status: 200, body: adp_read_fixture_file('listAllDevelopmentCerts_missing.xml'), headers: { 'Content-Type' => 'text/x-xml-plist' })
+
+    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
+      with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
+      to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][:development][:id]).gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][:development][:type_id]), headers: { 'Content-Type' => 'application/json' })
 
     Spaceship::Portal::Certificate::CERTIFICATE_TYPE_IDS.keys.each do |type|
       stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").

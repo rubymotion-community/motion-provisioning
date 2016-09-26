@@ -85,54 +85,6 @@
             </dict>
             <key>appIdId</key>
             <string>572XTN75U2</string>
-            <key>devices</key>
-            <array />
-            <key>deviceIds</key>
-            <array />
-            <key>certificates</key>
-            <array>
-               <dict>
-                  <key>name</key>
-                  <string>iOS Distribution: SunApps GmbH</string>
-                  <key>certificateId</key>
-                  <string>67890</string>
-                  <key>serialNumber</key>
-                  <string>797E732CCE8B7903</string>
-                  <key>status</key>
-                  <string>Issued</string>
-                  <key>statusCode</key>
-                  <integer>0</integer>
-                  <key>expirationDate</key>
-                  <date>2015-11-25T22:45:50Z</date>
-                  <key>certificatePlatform</key>
-                  <string>ios</string>
-                  <key>certificateType</key>
-                  <dict>
-                     <key>certificateTypeDisplayId</key>
-                     <string>R58UK2EWSO</string>
-                     <key>name</key>
-                     <string>iOS Distribution</string>
-                     <key>platform</key>
-                     <string>ios</string>
-                     <key>permissionType</key>
-                     <string>distribution</string>
-                     <key>distributionType</key>
-                     <string>store</string>
-                     <key>distributionMethod</key>
-                     <string>app</string>
-                     <key>ownerType</key>
-                     <string>team</string>
-                     <key>daysOverlap</key>
-                     <integer>364</integer>
-                     <key>maxActive</key>
-                     <integer>2</integer>
-                  </dict>
-               </dict>
-            </array>
-            <key>certificateIds</key>
-            <array>
-               <string>67890</string>
-            </array>
          </dict>
          <dict>
             <key>provisioningProfileId</key>
@@ -215,69 +167,6 @@
             </dict>
             <key>appIdId</key>
             <string>572XTN75U2</string>
-            <key>devices</key>
-            <array>
-               <dict>
-                  <key>deviceId</key>
-                  <string>RK3285QATH</string>
-                  <key>name</key>
-                  <string>Felix Krause's iPhone 5</string>
-                  <key>deviceNumber</key>
-                  <string>aaabbbccccddddaaabbb</string>
-                  <key>devicePlatform</key>
-                  <string>ios</string>
-                  <key>status</key>
-                  <string>c</string>
-               </dict>
-            </array>
-            <key>deviceIds</key>
-            <array>
-               <string>RK3285QATH</string>
-            </array>
-            <key>certificates</key>
-            <array>
-               <dict>
-                  <key>name</key>
-                  <string>iOS Development: Felix Krause</string>
-                  <key>certificateId</key>
-                  <string>12345</string>
-                  <key>serialNumber</key>
-                  <string>1B58B611A525F1B2</string>
-                  <key>status</key>
-                  <string>Issued</string>
-                  <key>statusCode</key>
-                  <integer>0</integer>
-                  <key>expirationDate</key>
-                  <date>2015-11-25T22:45:50Z</date>
-                  <key>certificatePlatform</key>
-                  <string>ios</string>
-                  <key>certificateType</key>
-                  <dict>
-                     <key>certificateTypeDisplayId</key>
-                     <string>5QPB9NHCEI</string>
-                     <key>name</key>
-                     <string>iOS Development</string>
-                     <key>platform</key>
-                     <string>ios</string>
-                     <key>permissionType</key>
-                     <string>development</string>
-                     <key>distributionType</key>
-                     <string>development</string>
-                     <key>distributionMethod</key>
-                     <string>app</string>
-                     <key>ownerType</key>
-                     <string>teamMember</string>
-                     <key>daysOverlap</key>
-                     <integer>364</integer>
-                     <key>maxActive</key>
-                     <integer>1</integer>
-                  </dict>
-               </dict>
-            </array>
-            <key>certificateIds</key>
-            <array>
-               <string>12345</string>
-            </array>
          </dict>
          <dict>
             <key>provisioningProfileId</key>
@@ -289,7 +178,7 @@
             <key>type</key>
             <string>iOS Distribution</string>
             <key>distributionMethod</key>
-            <string>adhoc</string>
+            <string>store</string>
             <key>proProPlatform</key>
             <string>{platform}</string>
             <key>UUID</key>
@@ -360,69 +249,6 @@
             </dict>
             <key>appIdId</key>
             <string>572XTN75U2</string>
-            <key>devices</key>
-            <array>
-               <dict>
-                  <key>deviceId</key>
-                  <string>RK3285QATH</string>
-                  <key>name</key>
-                  <string>Felix Krause's iPhone 5</string>
-                  <key>deviceNumber</key>
-                  <string>aaabbbccccddddaaabbb</string>
-                  <key>devicePlatform</key>
-                  <string>ios</string>
-                  <key>status</key>
-                  <string>c</string>
-               </dict>
-            </array>
-            <key>deviceIds</key>
-            <array>
-               <string>RK3285QATH</string>
-            </array>
-            <key>certificates</key>
-            <array>
-               <dict>
-                  <key>name</key>
-                  <string>iOS Distribution: SunApps GmbH</string>
-                  <key>certificateId</key>
-                  <string>67890</string>
-                  <key>serialNumber</key>
-                  <string>797E732CCE8B7903</string>
-                  <key>status</key>
-                  <string>Issued</string>
-                  <key>statusCode</key>
-                  <integer>0</integer>
-                  <key>expirationDate</key>
-                  <date>2015-11-25T22:45:50Z</date>
-                  <key>certificatePlatform</key>
-                  <string>ios</string>
-                  <key>certificateType</key>
-                  <dict>
-                     <key>certificateTypeDisplayId</key>
-                     <string>R58UK2EWSO</string>
-                     <key>name</key>
-                     <string>iOS Distribution</string>
-                     <key>platform</key>
-                     <string>ios</string>
-                     <key>permissionType</key>
-                     <string>distribution</string>
-                     <key>distributionType</key>
-                     <string>store</string>
-                     <key>distributionMethod</key>
-                     <string>app</string>
-                     <key>ownerType</key>
-                     <string>team</string>
-                     <key>daysOverlap</key>
-                     <integer>364</integer>
-                     <key>maxActive</key>
-                     <integer>2</integer>
-                  </dict>
-               </dict>
-            </array>
-            <key>certificateIds</key>
-            <array>
-               <string>67890</string>
-            </array>
          </dict>
       </array>
       <key>creationTimestamp</key>

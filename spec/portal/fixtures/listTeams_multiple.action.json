@@ -95,7 +95,8 @@
         },
         "roles": [
           "TEAM_ADMIN",
-          "SAFARI_PROGRAM_TEAM_ADMIN"
+          "SAFARI_PROGRAM_TEAM_ADMIN",
+          "XCODE_FREE_USER"
         ],
         "teamMemberId": "YYYYYYYYYY"
       },
