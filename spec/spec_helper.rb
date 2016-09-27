@@ -5,6 +5,7 @@ end
 
 if ENV['SPEC_PROFILER']
   require 'rspec-prof'
+  RSpecProf.printer_class = RubyProf::CallStackPrinter
 end
 
 require 'motion-provisioning'
