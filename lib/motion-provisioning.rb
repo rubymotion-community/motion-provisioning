@@ -57,7 +57,7 @@ module MotionProvisioning
       password ||= item.password if item
 
       if password.nil?
-        puts "The login information you enter will be stored safely in the macOS keychain."
+        Utils.log("Info", "The login information you enter will be stored safely in the macOS keychain.")
         password = Utils.ask_password("Info", "Password for #{email}:")
         Security::InternetPassword.add(server_name, email, password)
       end

@@ -235,7 +235,6 @@ module MotionProvisioning
         result.delete!(':')
         return result
       rescue
-        puts result
         Utils.log("Error", "Error parsing certificate '#{path}'")
       end
     end
@@ -245,7 +244,6 @@ module MotionProvisioning
       begin
         return result.match(/\/CN=(.*?)\//)[1]
       rescue
-        puts result
         Utils.log("Error", "Error parsing certificate '#{path}'")
       end
     end
