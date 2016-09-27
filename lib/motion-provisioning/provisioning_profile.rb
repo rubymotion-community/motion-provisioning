@@ -45,7 +45,7 @@ module MotionProvisioning
 
       # Offer to register devices connected to the current computer
       force_repair = false
-      if [:development, :adhoc].include?(type) && [:ios, :tvos].include?(platform)
+      if ENV['MOTION_PROVISIONING_NO_REGISTER_DEVICES'].nil? && [:development, :adhoc].include?(type) && [:ios, :tvos].include?(platform)
         ids = `/Library/RubyMotion/bin/ios/deploy -D`.split("\n")
 
         # If there is a profile, we check the device is included.
