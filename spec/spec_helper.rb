@@ -41,6 +41,7 @@ RSpec.configure do |config|
 
   config.after(:all) do
     `security delete-keychain motion-provisioning`
+    try_delete(File.expand_path("/tmp/spaceship_itc_service_key.txt"))
   end
 end
 
