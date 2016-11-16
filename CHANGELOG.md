@@ -1,4 +1,7 @@
 ## [0.0.6]
+### Added
+- The output directory can be configured via `MotionProvisioning.output_path`.
+
 ### Changed
 - Update Spaceship version, now using '~> 0.37.0'.
 
