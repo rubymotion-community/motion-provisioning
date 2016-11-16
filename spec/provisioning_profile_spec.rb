@@ -20,21 +20,21 @@ describe "MobileProvision" do
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{cert_platform}_development_certificate.cer")
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{cert_platform}_distribution_private_key.p12")
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{cert_platform}_distribution_certificate.cer")
-            FileUtils.cp("spec/fixtures/#{cert_platform}_development_certificate.cer", 'provisioning/')
-            FileUtils.cp("spec/fixtures/#{cert_platform}_distribution_certificate.cer", 'provisioning/')
+            FileUtils.cp("spec/fixtures/#{cert_platform}_development_certificate.cer", MotionProvisioning.output_path)
+            FileUtils.cp("spec/fixtures/#{cert_platform}_distribution_certificate.cer", MotionProvisioning.output_path)
             stub_existing_certificates
             stub_existing_app
             stub_devices
           end
 
           def mobileprovision_path(bundle_id, platform, type)
-            File.expand_path("provisioning/#{bundle_id}_#{platform}_#{type}_provisioning_profile.mobileprovision")
+            File.join(MotionProvisioning.output_path, "#{bundle_id}_#{platform}_#{type}_provisioning_profile.mobileprovision")
           end
 
           it "can use cached .mobileprovision" do
             cert = SPEC_CERTIFICATES[platform][cert_type][:content]
             mobileprovision = File.read("spec/fixtures/#{platform}/#{type}_provisioning_profile.mobileprovision").gsub('{certificate}', Base64.encode64(cert))
-            File.write("provisioning/com.example.myapp_#{platform}_#{type}_provisioning_profile.mobileprovision", mobileprovision)
+            File.write(mobileprovision_path(bundle_id, platform, type), mobileprovision)
 
             path = MotionProvisioning.profile(bundle_identifier: bundle_id,
               platform: platform,
@@ -45,7 +45,7 @@ describe "MobileProvision" do
           end
 
           it "exits if the certificate file is not present" do
-            FileUtils.rm("provisioning/#{cert_platform}_#{cert_type}_certificate.cer")
+            FileUtils.rm("#{MotionProvisioning.output_path}/#{cert_platform}_#{cert_type}_certificate.cer")
             expect(lambda {
               MotionProvisioning.profile(bundle_identifier: bundle_id,
                 platform: platform,

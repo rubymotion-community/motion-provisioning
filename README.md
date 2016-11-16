@@ -107,6 +107,12 @@ The certificates and profiles will be created and downloaded into a
 `provisioning` folder in the root of your application folder as part of running
 `rake archive:distribution` or `rake device`.
 
+The output path can be configured by setting `MotionProvisioning.output_path`:
+
+```ruby
+MotionProvisioning.output_path = '../my_provisioning'
+```
+
 ## Developer account
 
 The first time you run MotionProvisioning, you will be asked for your Apple ID

@@ -13,9 +13,9 @@ module MotionProvisioning
     def certificate_name(type, platform)
       self.type = type
       self.platform = platform
-      self.output_path = File.expand_path('./provisioning')
-      certificate_path = File.expand_path("./provisioning/#{platform}_#{type}_certificate.cer")
-      private_key_path = File.expand_path("./provisioning/#{platform}_#{type}_private_key.p12")
+      self.output_path = MotionProvisioning.output_path
+      certificate_path = File.join(output_path, "#{platform}_#{type}_certificate.cer")
+      private_key_path = File.join(output_path, "#{platform}_#{type}_private_key.p12")
 
       # First check if there is a certificate and key file, and if it is installed
       identities = available_identities
@@ -34,9 +34,6 @@ module MotionProvisioning
           return name
         end
       end
-
-      # Create the folder to store the certs
-      FileUtils.mkdir_p(File.expand_path('./provisioning'))
 
       # Make sure a client is created and logged in
       client
@@ -194,9 +191,9 @@ module MotionProvisioning
       Utils.log("Info", "Successfully installed certificate.")
 
       if self.type == :distribution
-        Utils.log("Warning", "You have just created a distribution certificate. These certificates must be shared with other team members by sending them the private key (.p12) and certificate (.cer) files in your /provisioning folder and install them in the keychain.")
+        Utils.log("Warning", "You have just created a distribution certificate. These certificates must be shared with other team members by sending them the private key (.p12) and certificate (.cer) files in your output folder and install them in the keychain.")
       else
-        Utils.log("Warning", "You have just created a development certificate. If you want to use this certificate on another machine, transfer the private key (.p12) and certificate (.cer) files in your /provisioning folder and install them in the keychain.")
+        Utils.log("Warning", "You have just created a development certificate. If you want to use this certificate on another machine, transfer the private key (.p12) and certificate (.cer) files in your output folder and install them in the keychain.")
       end
       Utils.ask("Info", "Press any key to continue...")
 

@@ -27,6 +27,8 @@ module MotionProvisioning
   def self.client
     Spaceship::Portal.client ||= begin
 
+      FileUtils.mkdir_p(MotionProvisioning.output_path)
+
       if File.exist?('.gitignore') && File.read('.gitignore').match(/^provisioning$/).nil?
         answer = Utils.ask("Info", "Do you want to add the 'provisioning' folder fo your '.gitignore' file? (Recommended) (Y/n):")
         `echo provisioning >> .gitignore` if answer.yes?
@@ -40,12 +42,11 @@ module MotionProvisioning
 
       email = ENV['MOTION_PROVISIONING_EMAIL'] || MotionProvisioning.config['email'] || Utils.ask("Info", "Your Apple ID email:").answer
 
-      config_path = File.expand_path('./provisioning/config.yaml')
+      config_path = File.join(MotionProvisioning.output_path, 'config.yaml')
 
       if ENV['MOTION_PROVISIONING_EMAIL'].nil? && !File.exist?(config_path)
-        answer = Utils.ask("Info", "Do you want to save the email to the config file ('provisioning/config.yaml') so you dont have to type it again? (Y/n):")
+        answer = Utils.ask("Info", "Do you want to save the email to the config file ('#{MotionProvisioning.output_path}/config.yaml') so you dont have to type it again? (Y/n):")
         if answer.yes?
-          FileUtils.mkdir_p(File.expand_path('./provisioning'))
           File.write(config_path, { 'email' => email }.to_yaml)
         end
       end
@@ -115,7 +116,7 @@ module MotionProvisioning
           team_id = client.select_team
 
           if File.exist?(config_path) && ENV['MOTION_PROVISIONING_TEAM_ID'].nil?
-            answer = Utils.ask("Info", "Do you want to save the team id (#{team_id}) in the config file ('provisioning/config.yaml') so you dont have to select it again? (Y/n):")
+            answer = Utils.ask("Info", "Do you want to save the team id (#{team_id}) in the config file ('#{MotionProvisioning.output_path}/config.yaml') so you dont have to select it again? (Y/n):")
             if answer.yes?
               config = YAML.load(File.read(config_path))
               config['team_id'] = team_id
@@ -141,12 +142,22 @@ module MotionProvisioning
 
   def self.config
     return @config if @config
-    config_path = File.expand_path('./provisioning/config.yaml')
+    config_path = File.join(MotionProvisioning.output_path, 'config.yaml')
     if File.exist?(config_path)
       @config = YAML.load(File.read(config_path)) || {}
     else
       @config = {}
     end
+  end
+
+  def self.output_path=(path)
+    path = File.expand_path(path)
+    Utils.log('Info', "Output directory for MotionProvisioning set to '#{path}'.")
+    @output_path = path
+  end
+
+  def self.output_path
+    @output_path ||= File.expand_path('provisioning')
   end
 
   def self.services

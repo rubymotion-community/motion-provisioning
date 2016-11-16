@@ -15,13 +15,15 @@ require 'stubbing'
 ENV['MOTION_PROVISIONING_EMAIL'] = 'foo@example.com'
 ENV['MOTION_PROVISIONING_PASSWORD'] = 'password'
 
+MotionProvisioning.output_path = 'provisioning_spec'
+
 def try_delete(path)
   FileUtils.rm_f(path) if File.exist? path
 end
 
 RSpec.configure do |config|
   config.before(:each) do
-    Dir.glob('provisioning/*.{p12,cer,certSigningRequest,mobileprovision}').each { |f| try_delete(f) }
+    Dir.glob(File.join(MotionProvisioning.output_path, '*.{p12,cer,certSigningRequest,mobileprovision}')).each { |f| try_delete(f) }
     Spaceship::Portal.client = nil
   end
 

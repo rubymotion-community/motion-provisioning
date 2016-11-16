@@ -10,19 +10,17 @@ module MotionProvisioning
     def provisioning_profile(bundle_id, app_name, platform, type)
       self.type = type
       self.platform = platform
-      provisioning_profile_path = File.expand_path("./provisioning/#{bundle_id}_#{platform}_#{type}_provisioning_profile.mobileprovision")
+      output_path = MotionProvisioning.output_path
+      provisioning_profile_path = File.join(output_path, "#{bundle_id}_#{platform}_#{type}_provisioning_profile.mobileprovision")
       provisioning_profile_name = "(MotionProvisioning) #{bundle_id} #{platform} #{type}"
       certificate_type = type == :development ? :development : :distribution
       certificate_platform = platform == :mac ? :mac : :ios
-      certificate_path = File.expand_path("./provisioning/#{certificate_platform}_#{certificate_type}_certificate.cer")
+      certificate_path = File.join(output_path, "#{certificate_platform}_#{certificate_type}_certificate.cer")
       if !File.exist?(certificate_path)
         Utils.log('Error', "Couldn't find the certificate in path '#{certificate_path}'.")
         Utils.log('Error', "Make sure you're configuring the certificate *before* the provisioning profile in the Rakefile.")
         abort
       end
-
-      # Create the folder to store the certs
-      FileUtils.mkdir_p(File.expand_path('./provisioning'))
 
       if File.exist?(provisioning_profile_path) && ENV['recreate_profile'].nil?
         mobileprovision = MobileProvision.new(provisioning_profile_path)
@@ -78,7 +76,7 @@ module MotionProvisioning
           client.development_certificates(mac: platform == :mac).map { |c| Spaceship::Portal::Certificate.factory(c) }
         else
           certificate_platform = platform == :mac ? :mac : :ios
-          certificate_sha1 = OpenSSL::Digest::SHA1.new(File.read(File.expand_path("./provisioning/#{certificate_platform}_distribution_certificate.cer")))
+          certificate_sha1 = OpenSSL::Digest::SHA1.new(File.read(File.join(output_path, "#{certificate_platform}_distribution_certificate.cer")))
           cert = client.distribution_certificates(mac: platform == :mac).detect do |c|
             OpenSSL::Digest::SHA1.new(c['certContent'].read) == certificate_sha1
           end

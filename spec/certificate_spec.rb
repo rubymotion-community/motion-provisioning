@@ -54,13 +54,13 @@ describe "Certificates" do
             allow($stderr).to receive(:noecho).and_yield
             allow(STDIN).to receive(:getc).and_return('1', '2', '3', "\n")
             expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq(certificate[:name])
-            expect(File.exist?("provisioning/#{platform}_#{type}_certificate.cer")).to be true
-            expect(File.exist?("provisioning/#{platform}_#{type}_private_key.p12")).to be true
+            expect(File.exist?("#{MotionProvisioning.output_path}/#{platform}_#{type}_certificate.cer")).to be true
+            expect(File.exist?("#{MotionProvisioning.output_path}/#{platform}_#{type}_private_key.p12")).to be true
           end
 
           it "can use cached certificate that is not installed" do
-            FileUtils.cp("spec/fixtures/#{platform}_#{type}_certificate.cer", 'provisioning/')
-            FileUtils.cp("spec/fixtures/#{platform}_#{type}_private_key.p12", 'provisioning/')
+            FileUtils.cp("spec/fixtures/#{platform}_#{type}_certificate.cer", MotionProvisioning.output_path)
+            FileUtils.cp("spec/fixtures/#{platform}_#{type}_private_key.p12", MotionProvisioning.output_path)
 
             expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq(certificate[:name])
           end
@@ -68,8 +68,8 @@ describe "Certificates" do
           it "can use cached certificate that is installed" do
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{platform}_#{type}_certificate.cer")
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{platform}_#{type}_private_key.p12")
-            FileUtils.cp("spec/fixtures/#{platform}_#{type}_certificate.cer", 'provisioning/')
-            FileUtils.cp("spec/fixtures/#{platform}_#{type}_private_key.p12", 'provisioning/')
+            FileUtils.cp("spec/fixtures/#{platform}_#{type}_certificate.cer", MotionProvisioning.output_path)
+            FileUtils.cp("spec/fixtures/#{platform}_#{type}_private_key.p12", MotionProvisioning.output_path)
 
             expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq(certificate[:name])
           end
