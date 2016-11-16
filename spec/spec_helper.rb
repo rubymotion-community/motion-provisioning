@@ -14,6 +14,7 @@ require 'stubbing'
 
 ENV['MOTION_PROVISIONING_EMAIL'] = 'foo@example.com'
 ENV['MOTION_PROVISIONING_PASSWORD'] = 'password'
+ENV['MOTION_PROVISIONING_TEAM_ID'] = 'XXXXXXXXXX'
 
 MotionProvisioning.output_path = 'provisioning_spec'
 
