@@ -10,5 +10,6 @@ namespace 'motion-provisioning' do
       exit
     end
     MotionProvisioning.client.create_device!(name, id)
+    puts "Successfully added device (name: #{name}, id: #{id})."
   end
 end
