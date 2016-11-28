@@ -9,8 +9,8 @@ GIT
 PATH
   remote: .
   specs:
-    motion-provisioning (0.0.5)
-      spaceship (~> 0.37.0)
+    motion-provisioning (0.0.6)
+      spaceship (~> 0.38)
 
 GEM
   remote: https://rubygems.org/
@@ -31,13 +31,13 @@ GEM
     docile (1.1.5)
     domain_name (0.5.20161021)
       unf (>= 0.0.5, < 1.0.0)
-    faraday (0.9.2)
+    faraday (0.10.0)
       multipart-post (>= 1.2, < 3)
     faraday-cookie_jar (0.0.6)
       faraday (>= 0.7.4)
       http-cookie (~> 1.0.0)
-    faraday_middleware (0.10.0)
-      faraday (>= 0.7.4, < 0.10)
+    faraday_middleware (0.10.1)
+      faraday (>= 0.7.4, < 1.0)
     fastimage (1.9.0)
       addressable (~> 2.3.5)
     hashdiff (0.3.0)
@@ -73,7 +73,7 @@ GEM
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.0)
-    spaceship (0.37.0)
+    spaceship (0.38.1)
       colored
       credentials_manager (>= 0.16.0)
       faraday (~> 0.9)
