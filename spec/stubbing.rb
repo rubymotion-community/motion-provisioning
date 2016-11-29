@@ -162,19 +162,19 @@ end
 def stub_devices
   [:ios, :mac].each do |platform|
     stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/device/listDevices.action").
-      with(body: { teamId: 'XXXXXXXXXX', pageSize: "500", pageNumber: "1", sort: 'name=asc' }).
+      with(body: { includeRemovedDevices:"false", pageNumber:"1", pageSize:"500", sort:"name=asc", teamId:"XXXXXXXXXX"}).
       to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
 
     stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/device/listDevices.action").
-      with(body: { deviceClasses: "tvOS", teamId: 'XXXXXXXXXX', pageSize: "500", pageNumber: "1", sort: 'name=asc' }).
+      with(body: { deviceClasses: "tvOS", includeRemovedDevices:"false", teamId: 'XXXXXXXXXX', pageSize: "500", pageNumber: "1", sort: 'name=asc' }).
       to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
 
     stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listDevices.action").
-      with(body: { deviceClasses: "tvOS", pageNumber: 1, pageSize: 500, sort: 'name=asc', teamId: 'XXXXXXXXXX' }.to_plist).
+      with(body: { deviceClasses: "tvOS", includeRemovedDevices:false, pageNumber: 1, pageSize: 500, sort: 'name=asc', teamId: 'XXXXXXXXXX' }.to_plist).
       to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
 
     stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listDevices.action").
-      with(body: { pageNumber: 1, pageSize: 500, sort: 'name=asc', teamId: 'XXXXXXXXXX' }.to_plist).
+      with(body: { includeRemovedDevices:false, pageNumber: 1, pageSize: 500, sort: 'name=asc', teamId: 'XXXXXXXXXX' }.to_plist).
       to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
   end
 end

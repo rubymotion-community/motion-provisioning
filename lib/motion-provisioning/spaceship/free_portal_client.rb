@@ -24,13 +24,14 @@ module Spaceship
       end
     end
 
-    def devices(mac: false)
+    def devices(mac: false, include_disabled: false)
       paging do |page_number|
         r = request_plist(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/listDevices.action", {
           teamId: team_id,
           pageNumber: page_number,
           pageSize: page_size,
-          sort: 'name=asc'
+          sort: 'name=asc',
+          includeRemovedDevices: include_disabled
         })
         parse_response(r, 'devices')
       end
