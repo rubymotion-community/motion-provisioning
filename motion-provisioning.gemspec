@@ -18,6 +18,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Spaceship depends on the `plist` and `security` gems which we use too
+  spec.add_dependency 'highline', '>= 1.7.2', '< 2.0.0' # user inputs (e.g. passwords)
   spec.add_dependency 'spaceship', '~> 0.38'
 
   spec.add_development_dependency 'bundler', '~> 1.12'
