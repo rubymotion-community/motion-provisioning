@@ -180,6 +180,11 @@ For example, to recreate the development profile:
 
     rake device recreate_profile=1
 
+Or to recreate the development certificate:
+
+    rake device recreate_certificate=1
+
+
 ## Entitlements and App Services
 
 motion-provisioning does not (yet) manage entitlements and app services (like
