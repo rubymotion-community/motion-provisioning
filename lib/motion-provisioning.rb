@@ -64,10 +64,12 @@ module MotionProvisioning
         Security::InternetPassword.add(server_name, email, password)
       end
 
+      # TODO: need to check if two factor auth!
+
       Utils.log("Info", "Logging into the Developer Portal with email '#{email}'.")
       begin
         client.user = email
-        client.send("do_login", email, password)
+        client.send_shared_login_request(email, password)
       rescue Spaceship::Client::InvalidUserCredentialsError => ex
         Utils.log("Error", "There was an error logging into your account. Your password may be wrong.")
 
@@ -88,6 +90,7 @@ module MotionProvisioning
       end
 
       if self.free
+        self.team = client.teams.first
         client.teams.each do |team|
           if team['currentTeamMember']['roles'].include?('XCODE_FREE_USER')
             client.team_id = team['teamId']

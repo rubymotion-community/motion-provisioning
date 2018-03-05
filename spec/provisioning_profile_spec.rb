@@ -31,9 +31,10 @@ describe "MobileProvision" do
             File.join(MotionProvisioning.output_path, "#{bundle_id}_#{platform}_#{type}_provisioning_profile.mobileprovision")
           end
 
-          it "can use cached .mobileprovision" do
+          it "can use cached .mobileprovision that has not yet expired" do
             cert = SPEC_CERTIFICATES[platform][cert_type][:content]
             mobileprovision = File.read("spec/fixtures/#{platform}/#{type}_provisioning_profile.mobileprovision").gsub('{certificate}', Base64.encode64(cert))
+            mobileprovision.sub!(/<key>ExpirationDate<\/key>\n\t<date>(.+)<\/date>/, "<key>ExpirationDate</key>\n\t<date>#{DateTime.now.next_year.iso8601}</date>")
             File.write(mobileprovision_path(bundle_id, platform, type), mobileprovision)
 
             path = MotionProvisioning.profile(bundle_identifier: bundle_id,

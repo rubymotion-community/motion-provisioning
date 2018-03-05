@@ -1,7 +1,7 @@
 module Spaceship
   class FreePortalClient < Spaceship::PortalClient
 
-    def create_provisioning_profile!(name, distribution_method, app_id, certificate_ids, device_ids, mac: false, sub_platform: nil)
+    def create_provisioning_profile!(name, distribution_method, app_id, certificate_ids, device_ids, mac: false, sub_platform: nil, template_name: nil)
       ensure_csrf(Spaceship::App)
 
       params = {
