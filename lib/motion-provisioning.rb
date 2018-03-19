@@ -90,7 +90,6 @@ module MotionProvisioning
       end
 
       if self.free
-        self.team = client.teams.first
         client.teams.each do |team|
           if team['currentTeamMember']['roles'].include?('XCODE_FREE_USER')
             client.team_id = team['teamId']
