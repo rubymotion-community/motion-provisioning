@@ -64,8 +64,6 @@ module MotionProvisioning
         Security::InternetPassword.add(server_name, email, password)
       end
 
-      # TODO: need to check if two factor auth!
-
       Utils.log("Info", "Logging into the Developer Portal with email '#{email}'.")
       begin
         client.user = email
