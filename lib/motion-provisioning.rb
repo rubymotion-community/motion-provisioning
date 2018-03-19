@@ -115,21 +115,20 @@ module MotionProvisioning
         else
 
           team_id = client.select_team
+          self.team = client.teams.detect { |team| team['teamId'] == team_id }
 
           if File.exist?(config_path) && ENV['MOTION_PROVISIONING_TEAM_ID'].nil?
-            answer = Utils.ask("Info", "Do you want to save the team id (#{team_id}) in the config file ('#{MotionProvisioning.output_path}/config.yaml') so you dont have to select it again? (Y/n):")
+            answer = Utils.ask("Info", "Do you want to save the team \"#{team['name']}\" (#{team_id}) in the config file ('#{MotionProvisioning.output_path}/config.yaml') so you dont have to select it again? (Y/n):")
             if answer.yes?
               config = YAML.load(File.read(config_path))
               config['team_id'] = team_id
               File.write(config_path, config.to_yaml)
             end
           end
-
-          self.team = client.teams.detect { |team| team['teamId'] == team_id }
         end
       end
 
-      Utils.log("Info", "Selected team '#{self.team['name']} (#{self.team['teamId']})'.")
+      Utils.log("Info", "Selected team \"#{self.team['name']}\" (#{self.team['teamId']}).")
 
       Spaceship::App.set_client(client)
       Spaceship::AppGroup.set_client(client)
