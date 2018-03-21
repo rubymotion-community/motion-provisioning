@@ -1,5 +1,46 @@
 module Spaceship
   class FreePortalClient < Spaceship::PortalClient
+    XCODE_VERSION = '9.2 (9C40b)'
+
+    def teams
+      return @teams if @teams
+      req = request(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/listTeams.action", nil, {
+        'X-Xcode-Version' => XCODE_VERSION # necessary in order to work with Xcode free team
+      })
+      @teams = parse_response(req, 'teams').sort_by do |team|
+        [
+          team['name'],
+          team['teamId']
+        ]
+      end
+    end
+
+    def development_certificates(mac: false)
+      paging do |page_number|
+        r = request(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/listAllDevelopmentCerts.action?clientId=XABBG36SBA&teamId=#{team_id}", nil, {
+          'X-Xcode-Version' => XCODE_VERSION # necessary in order to work with Xcode free team
+        })
+        parse_response(r, 'certificates')
+      end
+    end
+
+    def provisioning_profiles_via_xcode_api(mac: false)
+      req = request(:post) do |r|
+        r.url("https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/#{platform_slug(mac)}/listProvisioningProfiles.action")
+        r.params = {
+          teamId: team_id,
+          includeInactiveProfiles: true,
+          onlyCountLists: true
+        }
+        r.headers['X-Xcode-Version'] = XCODE_VERSION # necessary in order to work with Xcode free team
+      end
+
+      result = parse_response(req, 'provisioningProfiles')
+
+      csrf_cache[Spaceship::Portal::ProvisioningProfile] = self.csrf_tokens
+
+      result
+    end
 
     def create_provisioning_profile!(name, distribution_method, app_id, certificate_ids, device_ids, mac: false, sub_platform: nil, template_name: nil)
       ensure_csrf(Spaceship::App)
@@ -67,12 +108,36 @@ module Spaceship
       parse_response(r, 'appId')
     end
 
-    def create_app!(type, name, bundle_id, mac: false)
+    def create_app!(type, name, bundle_id, mac: false, enable_services: {})
+      # We moved the ensure_csrf to the top of this method
+      # as we got some users with issues around creating new apps
+      # https://github.com/fastlane/fastlane/issues/5813
+      ensure_csrf(Spaceship::Portal::App)
+
+      ident_params = case type.to_sym
+                     when :explicit
+                       {
+                         type: 'explicit',
+                         # push: 'on',          # Not available to free teams
+                         # inAppPurchase: 'on', # Not available to free teams
+                         gameCenter: 'on'
+                       }
+                     when :wildcard
+                       {
+                         type: 'wildcard',
+                       }
+                     end
+
       params = {
         identifier: bundle_id,
         name: name,
         teamId: team_id
       }
+      params.merge!(ident_params)
+
+      enable_services.each do |k, v|
+        params[v.service_id.to_sym] = v.value
+      end
 
       ensure_csrf(Spaceship::App)
 
@@ -102,12 +167,15 @@ module Spaceship
     private
 
     def request_plist(method, url_or_path = nil, params = nil, headers = {}, &block)
-      headers['X-Xcode-Version'] = '7.3.1 (7D1014)'
-      headers['Content-Type'] = 'text/x-xml-plist'
+      headers['X-Xcode-Version'] = XCODE_VERSION
+      headers['Accept'] = 'text/x-xml-plist'
       headers['User-Agent'] = USER_AGENT
       headers.merge!(csrf_tokens)
 
-      params = params.to_plist if params
+      if params
+        headers['Content-Type'] = 'text/x-xml-plist'
+        params = params.to_plist
+      end
 
       send_request(method, url_or_path, params, headers, &block)
     end

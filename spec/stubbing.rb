@@ -39,9 +39,14 @@ def stub_login
     with(body: { "accountName" => "bad-username", "password" => "bad-password", "rememberMe" => true }.to_json).
     to_return(status: 401, body: '{}', headers: { 'Set-Cookie' => 'session=invalid' })
 
-  # Portal login
+  # List paid teams
   stub_request(:post, 'https://developer.apple.com/services-account/QH65B2/account/listTeams.action').
     to_return(status: 200, body: adp_read_fixture_file('listTeams.action.json'), headers: { 'Content-Type' => 'application/json' })
+
+  # List free teams
+  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/listTeams.action").
+     with(:headers => {'X-Xcode-Version'=>'9.2 (9C40b)'}).
+     to_return(status: 200, body: adp_read_fixture_file('listTeams.action.json'), headers: { 'Content-Type' => 'application/json' })
 end
 
 def stub_create_profile(type, platform)
