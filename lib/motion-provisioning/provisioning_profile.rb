@@ -35,7 +35,7 @@ module MotionProvisioning
 
       app = Application.find_or_create(bundle_id: bundle_id, name: app_name, mac: platform == :mac)
 
-      profile = profile_type.find_by_bundle_id(bundle_id, mac: platform == :mac).detect do |profile|
+      profile = profile_type.find_by_bundle_id(bundle_id: bundle_id, mac: platform == :mac, sub_platform: ('tvOS' if platform == :tvos)).detect do |profile|
         next if profile.platform.downcase.include?("tvos") && platform != :tvos
         next if !profile.platform.downcase.include?("tvos") && platform == :tvos
         profile.name == provisioning_profile_name
@@ -124,10 +124,10 @@ module MotionProvisioning
     # The kind of provisioning profile we're interested in
     def profile_type
       return @profile_type if @profile_type
-      @profile_type = Spaceship.provisioning_profile.app_store
-      @profile_type = Spaceship.provisioning_profile.in_house if client.in_house?
-      @profile_type = Spaceship.provisioning_profile.ad_hoc if self.type == :adhoc
-      @profile_type = Spaceship.provisioning_profile.development if self.type == :development
+      @profile_type = Spaceship::Portal.provisioning_profile.app_store
+      @profile_type = Spaceship::Portal.provisioning_profile.in_house if client.in_house?
+      @profile_type = Spaceship::Portal.provisioning_profile.ad_hoc if self.type == :adhoc
+      @profile_type = Spaceship::Portal.provisioning_profile.development if self.type == :development
       @profile_type
     end
   end

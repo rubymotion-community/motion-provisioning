@@ -1,0 +1,13 @@
+
+{
+  "provider": {
+    "providerId": 4321,
+    "name": "TaquitosR Us",
+    "contentTypes": ["SOFTWARE"]
+  },
+  "availableProviders": [{
+    "providerId": 4321,
+    "name": "TaquitosR Us",
+    "contentTypes": ["SOFTWARE"]
+  }]
+}

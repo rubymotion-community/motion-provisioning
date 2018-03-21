@@ -17,6 +17,8 @@
             <string>store</string>
             <key>proProPlatform</key>
             <string>{platform}</string>
+            <key>proProSubPlatform</key>
+            <string>{subPlatform}</string>
             <key>UUID</key>
             <string>aad7df3b-9767-4e85-a1ea-1df4d8f32faa</string>
             <key>version</key>
@@ -99,6 +101,8 @@
             <string>limited</string>
             <key>proProPlatform</key>
             <string>{platform}</string>
+            <key>proProSubPlatform</key>
+            <string>{subPlatform}</string>
             <key>UUID</key>
             <string>897b1089-906a-4ecf-84c5-ffaae80ac0dd</string>
             <key>version</key>
@@ -181,6 +185,8 @@
             <string>store</string>
             <key>proProPlatform</key>
             <string>{platform}</string>
+            <key>proProSubPlatform</key>
+            <string>{subPlatform}</string>
             <key>UUID</key>
             <string>a8b1563e-7559-41f7-854b-6cd09f950d11</string>
             <key>version</key>

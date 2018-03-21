@@ -67,7 +67,7 @@ module MotionProvisioning
       Utils.log("Info", "Logging into the Developer Portal with email '#{email}'.")
       begin
         client.user = email
-        client.send("do_login", email, password)
+        client.send_shared_login_request(email, password)
       rescue Spaceship::Client::InvalidUserCredentialsError => ex
         Utils.log("Error", "There was an error logging into your account. Your password may be wrong.")
 
@@ -96,7 +96,7 @@ module MotionProvisioning
         end
 
         if client.team_id.nil?
-          raise "could not find free team"
+          raise "The current user does not belong to a free team."
         end
       else
         if team_id = MotionProvisioning.config['team_id'] || ENV['MOTION_PROVISIONING_TEAM_ID']
@@ -113,23 +113,20 @@ module MotionProvisioning
             raise "The current user does not belong to team with ID '#{team_id}' selected in config.yml."
           end
         else
-
           team_id = client.select_team
-
-          if File.exist?(config_path) && ENV['MOTION_PROVISIONING_TEAM_ID'].nil?
-            answer = Utils.ask("Info", "Do you want to save the team id (#{team_id}) in the config file ('#{MotionProvisioning.output_path}/config.yaml') so you dont have to select it again? (Y/n):")
-            if answer.yes?
-              config = YAML.load(File.read(config_path))
-              config['team_id'] = team_id
-              File.write(config_path, config.to_yaml)
-            end
-          end
-
           self.team = client.teams.detect { |team| team['teamId'] == team_id }
         end
       end
 
-      Utils.log("Info", "Selected team '#{self.team['name']} (#{self.team['teamId']})'.")
+      Utils.log("Info", "Selected team \"#{team['name']}\" (#{team['teamId']}).")
+      if File.exist?(config_path) && ENV['MOTION_PROVISIONING_TEAM_ID'].nil? && MotionProvisioning.config['team_id'].nil?
+        answer = Utils.ask("Info", "Do you want to save the team \"#{team['name']}\" (#{team['teamId']}) in the config file ('#{MotionProvisioning.output_path}/config.yaml') so you dont have to select it again? (Y/n):")
+        if answer.yes?
+          config = YAML.load(File.read(config_path))
+          config['team_id'] = team['teamId']
+          File.write(config_path, config.to_yaml)
+        end
+      end
 
       Spaceship::App.set_client(client)
       Spaceship::AppGroup.set_client(client)
