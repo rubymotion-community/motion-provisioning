@@ -45,7 +45,6 @@ def stub_login
 
   # List free teams
   stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/listTeams.action").
-     with(:headers => {'X-Xcode-Version'=>'9.2 (9C40b)'}).
      to_return(status: 200, body: adp_read_fixture_file('listTeams.action.json'), headers: { 'Content-Type' => 'application/json' })
 end
 
