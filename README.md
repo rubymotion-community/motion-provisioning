@@ -50,7 +50,7 @@ MotionProvisioning.certificate(platform: platform,
 |Parameter|Description|
 |---------|------|
 |`platform`|`:ios`, `:tvos`, `:mac`|
-|`type`|`:development`, `:distribution`, `:developer_id` (only mac)|
+|`type`|`:beta`, `:distribution`, `:developer_id` (only mac)|
 |`free`|`true` if you want to use a free developer account. Default: `false`|
 
 ```ruby
