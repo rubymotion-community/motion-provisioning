@@ -204,7 +204,7 @@ You can also add arbitrary device IDs by running:
 
 Then, you will need to recreate the profile to include the newly registered device:
 
-    rake device recreate_profiles=1
+    rake device recreate_profile=1
 
 ## Testing
 
