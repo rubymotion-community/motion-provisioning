@@ -201,7 +201,7 @@ def stub_existing_certificates
       to_return(status: 200, body: adp_read_fixture_file('listAllDevelopmentCerts_existing.xml').gsub('{certificate}', Base64.encode64(SPEC_CERTIFICATES[platform][:development][:content])), headers: { 'Content-Type' => 'text/x-xml-plist' })
 
      stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
-       with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
+       with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,MD8Q2VRT6A,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
        to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action_existing.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][:development][:id]).gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][:development][:type_id]), headers: { 'Content-Type' => 'application/json' })
 
      stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
@@ -224,7 +224,7 @@ def stub_missing_then_existing_certificates
       to_return(status: 200, body: adp_read_fixture_file('downloadDistributionCerts_existing.xml').gsub('{certificate}', Base64.encode64(SPEC_CERTIFICATES[:ios][:distribution][:content])), headers: { 'Content-Type' => 'text/x-xml-plist' })
 
     stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
-      with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
+      with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,MD8Q2VRT6A,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
       to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][:development][:id]).gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][:development][:type_id]), headers: { 'Content-Type' => 'application/json' })
 
     stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listAllDevelopmentCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
@@ -263,7 +263,7 @@ def stub_missing_certificates
       to_return(status: 200, body: adp_read_fixture_file('listAllDevelopmentCerts_missing.xml'), headers: { 'Content-Type' => 'text/x-xml-plist' })
 
     stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
-      with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
+      with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,MD8Q2VRT6A,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
       to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][:development][:id]).gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][:development][:type_id]), headers: { 'Content-Type' => 'application/json' })
 
     Spaceship::Portal::Certificate::CERTIFICATE_TYPE_IDS.keys.each do |type|

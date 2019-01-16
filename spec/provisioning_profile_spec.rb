@@ -70,6 +70,7 @@ describe "MobileProvision" do
           end
 
           it "can download existing .mobileprovision" do
+            stub_create_profile(type, platform) if type == :adhoc
             stub_list_existing_profiles(type, platform)
             stub_download_profile(type, platform)
 
@@ -83,6 +84,7 @@ describe "MobileProvision" do
 
           it "can repair existing .mobileprovision" do
             stub_list_invalid_profiles(type, platform)
+            stub_create_profile(type, platform) if type == :adhoc
             stub_repair_profile(type, platform)
             stub_download_profile(type, platform)
 
