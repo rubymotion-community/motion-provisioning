@@ -49,7 +49,7 @@ module MotionProvisioning
         # If there is a profile, we check the device is included.
         # Otherwise check if the device is registered in the Developer Portal.
         if profile
-          profile_devices = profile.devices.map(&:udid)
+          profile_devices = profile.devices.map(&:udid).map(&:downcase)
           ids.each do |id|
             next if profile_devices.include?(id.downcase)
             answer = Utils.ask("Info", "This computer is connected to an iOS device with ID '#{id}' which is not included in the profile. Do you want to register it? (Y/n):")
