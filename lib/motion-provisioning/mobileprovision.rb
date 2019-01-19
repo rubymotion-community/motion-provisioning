@@ -1,5 +1,5 @@
 module MotionProvisioning
-  # Represents a .mobileprobision file on disk
+  # Represents a .mobileprovision file on disk
   class MobileProvision
     attr_accessor :hash, :enabled_services, :certificates
 
