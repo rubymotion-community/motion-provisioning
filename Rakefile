@@ -1,3 +1,4 @@
+require 'bundler/gem_tasks'
 require 'motion-provisioning'
 
 desc "Generate the certificates needed by the test suite."

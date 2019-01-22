@@ -9,7 +9,7 @@ GIT
 PATH
   remote: .
   specs:
-    motion-provisioning (1.0.0)
+    motion-provisioning (1.0.1)
       fastlane (~> 2.113.0)
       highline (>= 1.7.2, < 2.0.0)
 
@@ -212,4 +212,4 @@ DEPENDENCIES
   webmock (~> 1.21)
 
 BUNDLED WITH
-   1.16.1
+   1.17.1
