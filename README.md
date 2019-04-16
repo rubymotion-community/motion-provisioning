@@ -184,6 +184,9 @@ Or to recreate the development certificate:
 
     rake device recreate_certificate=1
 
+Or to recreate the distribution certificate:
+
+    rake archive:distribution recreate_certificate=1
 
 ## Entitlements and App Services
 
