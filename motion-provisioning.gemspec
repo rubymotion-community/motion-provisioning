@@ -14,7 +14,11 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/HipByte/motion-provisioning"
   spec.license       = "BSD"
 
-  spec.files = Dir.glob("lib/**/*", File::FNM_DOTMATCH) + %w(bin/export_private_key LICENSE.txt README.md)
+  spec.files = Dir.glob("lib/**/*", File::FNM_DOTMATCH) +
+               Dir.glob("bin/*") +
+               Dir.glob("export_private_key/*") +
+               %w(LICENSE.txt README.md)
+
   spec.require_paths = ["lib"]
 
   # Spaceship depends on the `plist` and `security` gems which we use too
