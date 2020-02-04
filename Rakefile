@@ -43,7 +43,7 @@ task :production_test do
   require "fileutils"
 
   MotionProvisioning.client
-  
+
   num = rand(9999)
   ios_app_id = "com.hipbyte.iostest#{num}"
   ios_app = MotionProvisioning::Application.find_or_create(bundle_id: ios_app_id, name: "My iOS Test App")
@@ -53,10 +53,10 @@ task :production_test do
       type = :development if type == :development_free
       cert_type = type == :development ? :development : :distribution
       MotionProvisioning.certificate(type: cert_type, platform: :ios, free: free)
-      MotionProvisioning.profile(bundle_identifier: ios_app_id, 
+      MotionProvisioning.profile(bundle_identifier: ios_app_id,
         platform: platform,
-        app_name: "My iOS Test App", 
-        type: type, 
+        app_name: "My iOS Test App",
+        type: type,
         free: free)
       FileUtils.rm(Dir.glob('provisioning/*.cer'))
     end
@@ -69,9 +69,9 @@ task :production_test do
   platform = :mac
   [:distribution, :development].each do |type|
     MotionProvisioning.certificate(type: type, platform: :mac)
-    MotionProvisioning.profile(bundle_identifier: mac_app_id, 
+    MotionProvisioning.profile(bundle_identifier: mac_app_id,
       platform: platform,
-      app_name: "My macOS Test App", 
+      app_name: "My macOS Test App",
       type: type)
     FileUtils.rm(Dir.glob('provisioning/*.cer'))
   end

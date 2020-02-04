@@ -1,4 +1,5 @@
 require 'rake'
+
 namespace 'motion-provisioning' do
   desc 'Add a device to the provisioning portal: rake "motion-provisioning:add-device[device_name,device_id]"'
   task 'add-device', [:name, :id] do |t, args|

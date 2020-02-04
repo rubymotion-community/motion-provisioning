@@ -6,8 +6,8 @@ require 'motion-provisioning/version'
 Gem::Specification.new do |spec|
   spec.name          = "motion-provisioning"
   spec.version       = MotionProvisioning::VERSION
-  spec.authors       = ["Mark Villacampa"]
-  spec.email         = ["m@markvillacampa.com"]
+  spec.authors       = ["Mark Villacampa", 'Andrew Havens']
+  spec.email         = ["m@markvillacampa.com", 'email@andrewhavens.com']
 
   spec.summary       = %q{Simplified provisioning for RubyMotion iOS, tvOS and macOS apps.}
   spec.description   = %q{A small library that manages certificates and profiles automatically, from the command line, with minimal configuration.}
