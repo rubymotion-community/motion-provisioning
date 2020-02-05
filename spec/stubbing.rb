@@ -1,5 +1,4 @@
 require 'webmock/rspec'
-require 'base64'
 
 # NOTE: Many of these request stubs are copied directly from the Fastlane specs
 
@@ -327,7 +326,6 @@ def stub_existing_app
   end
 end
 
-WebMock.disable_net_connect!
 
 RSpec.configure do |config|
   config.before(:each) do

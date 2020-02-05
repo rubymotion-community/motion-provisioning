@@ -28,6 +28,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.1'
   spec.add_development_dependency 'rspec_junit_formatter', '~> 0.2'
-  spec.add_development_dependency 'webmock', '~> 1.21'
+  spec.add_development_dependency 'webmock', '~> 3.7'
   spec.add_development_dependency 'simplecov', '~> 0.12'
 end

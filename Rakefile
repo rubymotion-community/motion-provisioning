@@ -1,6 +1,14 @@
 require 'bundler/gem_tasks'
 require 'motion-provisioning'
 
+begin
+  require 'rspec/core/rake_task'
+  RSpec::Core::RakeTask.new(:spec, :tag) do |t, task_args|
+    t.rspec_opts = "--tag #{task_args[:tag]}"
+  end
+rescue LoadError
+end
+
 desc "Generate the certificates needed by the test suite."
 task :generate_certificates do
   FileUtils.mkdir_p('spec/fixtures')

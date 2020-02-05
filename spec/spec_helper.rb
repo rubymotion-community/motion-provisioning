@@ -10,10 +10,13 @@ end
 
 require 'motion-provisioning'
 require 'json'
-require 'stubbing'
+require 'webmock/rspec'
+require 'base64'
+require_relative 'stubbing'
 
 ENV['MOTION_PROVISIONING_EMAIL'] = 'foo@example.com'
 ENV['MOTION_PROVISIONING_PASSWORD'] = 'password'
+WebMock.disable_net_connect!
 ENV['MOTION_PROVISIONING_TEAM_ID'] = 'XXXXXXXXXX'
 
 MotionProvisioning.output_path = 'provisioning_spec'
@@ -23,18 +26,20 @@ def try_delete(path)
 end
 
 RSpec.configure do |config|
+  config.filter_run_when_matching :focus
+
   config.before(:each) do
     Dir.glob(File.join(MotionProvisioning.output_path, '*.{p12,cer,certSigningRequest,mobileprovision}')).each { |f| try_delete(f) }
     Spaceship::Portal.client = nil
   end
 
-  config.before(:each) do
-    @start_timer = Time.now
-  end
+  # config.before(:each) do
+  #   @start_timer = Time.now
+  # end
 
-  config.after(:each) do
-    RSpec.configuration.output_stream.puts "Spec ran in #{Time.now - @start_timer}s"
-  end
+  # config.after(:each) do
+  #   RSpec.configuration.output_stream.puts "Spec ran in #{Time.now - @start_timer}s"
+  # end
 
   config.before(:all) do
     `security create-keychain -p "foo" motion-provisioning`
