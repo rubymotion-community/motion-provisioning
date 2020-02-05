@@ -10,6 +10,66 @@ def stub_login
      to_return(status: 200, body: adp_read_fixture_file('listTeams.action.json'), headers: { 'Content-Type' => 'application/json' })
 end
 
+def stub_devices
+  [:ios, :mac].each do |platform|
+    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/device/listDevices.action").
+      with(body: { includeRemovedDevices:"false", pageNumber:"1", pageSize:"500", sort:"name=asc", teamId:"XXXXXXXXXX"}).
+      to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
+
+    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/device/listDevices.action").
+      with(body: { deviceClasses: "tvOS", includeRemovedDevices:"false", teamId: 'XXXXXXXXXX', pageSize: "500", pageNumber: "1", sort: 'name=asc' }).
+      to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
+
+    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listDevices.action").
+      with(body: { deviceClasses: "tvOS", includeRemovedDevices:false, pageNumber: 1, pageSize: 500, sort: 'name=asc', teamId: 'XXXXXXXXXX' }.to_plist).
+      to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
+
+    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listDevices.action").
+      with(body: { includeRemovedDevices:false, pageNumber: 1, pageSize: 500, sort: 'name=asc', teamId: 'XXXXXXXXXX' }.to_plist).
+      to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
+  end
+end
+
+def stub_existing_app
+  [:ios, :mac].each do |platform|
+    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/identifiers/listAppIds.action").
+      with(body: { teamId: 'XXXXXXXXXX', pageSize: "500", pageNumber: "1", sort: 'name=asc' }).
+      to_return(status: 200, body: adp_read_fixture_file('listApps.action_existing.json'), headers: { 'Content-Type' => 'application/json' })
+
+    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listAppIds.action?clientId=XABBG36SBA").
+      with(body: { teamId: 'XXXXXXXXXX', pageSize: 500, pageNumber: 1, sort: 'name=asc' }.to_plist).
+      to_return(status: 200, body: adp_read_fixture_file('listApps.action_existing.xml'), headers: { 'Content-Type' => 'text/x-xml-plist' })
+
+    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/identifiers/getAppIdDetail.action").
+      with(:body => {"appIdId"=>"L42E9BTRAA", "teamId"=>"XXXXXXXXXX"}).
+      to_return(status: 200, body: adp_read_fixture_file('getAppIdDetail.action.json'), headers: { 'Content-Type' => 'application/json' })
+
+    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/identifiers/getAppIdDetail.action").
+      with(:body => {"appIdId"=>"L42E9BTRAB", "teamId"=>"XXXXXXXXXX"}).
+      to_return(status: 200, body: adp_read_fixture_file('getAppIdDetail.action.json'), headers: { 'Content-Type' => 'application/json' })
+  end
+end
+
+def stub_missing_app
+  [:ios, :mac].each do |platform|
+    stub_request(:post, "https://developer.apple.com/services-account/qh65b2/account/#{platform.to_s}/identifiers/listappids.action").
+      with(body: { teamid: 'xxxxxxxxxx', pagesize: "500", pagenumber: "1", sort: 'name=asc' }).
+      to_return(status: 200, body: adp_read_fixture_file('listapps.action.json'), headers: { 'content-type' => 'application/json' })
+
+    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listAppIds.action?clientId=XABBG36SBA").
+      with(body: { teamid: 'xxxxxxxxxx', pagesize: "500", pagenumber: "1", sort: 'name=asc' }.to_plist).
+      to_return(status: 200, body: adp_read_fixture_file('listapps.action.json'), headers: { 'content-type' => 'text/x-xml-plist' })
+
+    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/identifiers/addAppId.action").
+      with(:body => {"appIdName"=>"My App", "appIdentifierString"=>"com.example.myapp", "explicitIdentifier"=>"com.example.myapp", "gameCenter"=>"on", "inAppPurchase"=>"on", "push"=>"on", "teamId"=>"XXXXXXXXXX", "type"=>"explicit"}).
+      to_return(status: 200, body: adp_read_fixture_file('addAppId.action.explicit.json'), headers: { 'Content-Type' => 'application/json' })
+
+    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/addAppId.action?clientId=XABBG36SBA").
+      with(:body => { identifier: "com.example.myapp", name: "My App", teamId: "XXXXXXXXXX" }.to_plist).
+      to_return(status: 200, body: adp_read_fixture_file('addAppId.action.explicit.json'), headers: { 'Content-Type' => 'application/json' })
+  end
+end
+
 def stub_create_profile(type, platform)
   normalized_platform = platform == :mac ? :mac : :ios
 
@@ -134,26 +194,6 @@ def stub_list_missing_profiles(type, platform)
     to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action.plist'), headers: { 'Content-Type' => 'text/x-xml-plist' })
 end
 
-def stub_devices
-  [:ios, :mac].each do |platform|
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/device/listDevices.action").
-      with(body: { includeRemovedDevices:"false", pageNumber:"1", pageSize:"500", sort:"name=asc", teamId:"XXXXXXXXXX"}).
-      to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/device/listDevices.action").
-      with(body: { deviceClasses: "tvOS", includeRemovedDevices:"false", teamId: 'XXXXXXXXXX', pageSize: "500", pageNumber: "1", sort: 'name=asc' }).
-      to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listDevices.action").
-      with(body: { deviceClasses: "tvOS", includeRemovedDevices:false, pageNumber: 1, pageSize: 500, sort: 'name=asc', teamId: 'XXXXXXXXXX' }.to_plist).
-      to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listDevices.action").
-      with(body: { includeRemovedDevices:false, pageNumber: 1, pageSize: 500, sort: 'name=asc', teamId: 'XXXXXXXXXX' }.to_plist).
-      to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
-  end
-end
-
 def stub_existing_certificates
   [:ios, :mac].each do |platform|
     stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/downloadDistributionCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
@@ -246,46 +286,6 @@ def stub_request_certificate(csr, type)
      stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform}/submitDevelopmentCSR.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
        with(:body => { csrContent: csr, teamId: 'XXXXXXXXXX' }.to_plist).
        to_return(:status => 200, :body => adp_read_fixture_file('submitDevelopmentCSR.action.xml').gsub("{certificate_type_id}", certificate[:type_id]).gsub("{certificate_id}", certificate[:id]).gsub('{cert_content}', Base64.encode64(certificate[:content])), :headers => { 'Content-Type' => 'text/x-xml-plist' })
-  end
-end
-
-def stub_missing_app
-  [:ios, :mac].each do |platform|
-    stub_request(:post, "https://developer.apple.com/services-account/qh65b2/account/#{platform.to_s}/identifiers/listappids.action").
-      with(body: { teamid: 'xxxxxxxxxx', pagesize: "500", pagenumber: "1", sort: 'name=asc' }).
-      to_return(status: 200, body: adp_read_fixture_file('listapps.action.json'), headers: { 'content-type' => 'application/json' })
-
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listAppIds.action?clientId=XABBG36SBA").
-      with(body: { teamid: 'xxxxxxxxxx', pagesize: "500", pagenumber: "1", sort: 'name=asc' }.to_plist).
-      to_return(status: 200, body: adp_read_fixture_file('listapps.action.json'), headers: { 'content-type' => 'text/x-xml-plist' })
-
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/identifiers/addAppId.action").
-      with(:body => {"appIdName"=>"My App", "appIdentifierString"=>"com.example.myapp", "explicitIdentifier"=>"com.example.myapp", "gameCenter"=>"on", "inAppPurchase"=>"on", "push"=>"on", "teamId"=>"XXXXXXXXXX", "type"=>"explicit"}).
-      to_return(status: 200, body: adp_read_fixture_file('addAppId.action.explicit.json'), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/addAppId.action?clientId=XABBG36SBA").
-      with(:body => { identifier: "com.example.myapp", name: "My App", teamId: "XXXXXXXXXX" }.to_plist).
-      to_return(status: 200, body: adp_read_fixture_file('addAppId.action.explicit.json'), headers: { 'Content-Type' => 'application/json' })
-  end
-end
-
-def stub_existing_app
-  [:ios, :mac].each do |platform|
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/identifiers/listAppIds.action").
-      with(body: { teamId: 'XXXXXXXXXX', pageSize: "500", pageNumber: "1", sort: 'name=asc' }).
-      to_return(status: 200, body: adp_read_fixture_file('listApps.action_existing.json'), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listAppIds.action?clientId=XABBG36SBA").
-      with(body: { teamId: 'XXXXXXXXXX', pageSize: 500, pageNumber: 1, sort: 'name=asc' }.to_plist).
-      to_return(status: 200, body: adp_read_fixture_file('listApps.action_existing.xml'), headers: { 'Content-Type' => 'text/x-xml-plist' })
-
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/identifiers/getAppIdDetail.action").
-      with(:body => {"appIdId"=>"L42E9BTRAA", "teamId"=>"XXXXXXXXXX"}).
-      to_return(status: 200, body: adp_read_fixture_file('getAppIdDetail.action.json'), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/identifiers/getAppIdDetail.action").
-      with(:body => {"appIdId"=>"L42E9BTRAB", "teamId"=>"XXXXXXXXXX"}).
-      to_return(status: 200, body: adp_read_fixture_file('getAppIdDetail.action.json'), headers: { 'Content-Type' => 'application/json' })
   end
 end
 
