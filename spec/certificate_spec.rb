@@ -3,11 +3,11 @@ describe "Certificates" do
   [:ios, :mac].each do |platform|
     describe platform.to_s do
       [:distribution, :development_free, :development].each do |type|
-        next if platform == :mac && type == :development_free
+        free = type == :development_free
+        next if platform == :mac && free
 
-        describe type.to_s.capitalize do
+        describe type.to_s.capitalize, platform: platform.to_s, type: type.to_s, free: free do
 
-          free = type == :development_free
           type = :development if type == :development_free
           let(:certificate) { SPEC_CERTIFICATES[platform][type] }
 

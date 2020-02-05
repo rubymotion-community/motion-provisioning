@@ -1,6 +1,6 @@
 describe "Application" do
   [:ios, :mac].each do |platform|
-    describe platform.to_s do
+    describe platform.to_s, platform: platform.to_s do
       before do
         MotionProvisioning.services.clear
       end

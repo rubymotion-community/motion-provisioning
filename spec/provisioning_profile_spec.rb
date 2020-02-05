@@ -2,11 +2,11 @@ describe "MobileProvision" do
   [:ios, :tvos, :mac].each do |platform|
     describe platform.to_s do
       [:distribution, :adhoc, :development, :development_free].each do |type|
-        next if platform == :mac && type == :development_free
+        free = type == :development_free
+        next if platform == :mac && free
 
-        describe type.to_s.capitalize do
+        describe type.to_s.capitalize, platform: platform.to_s, type: type.to_s, free: free do
 
-          free = (type == :development_free && platform != :mac)
           type = :development if type == :development_free
           cert_type = type == :development ? :development : :distribution
           cert_platform = platform == :mac ? :mac : :ios
