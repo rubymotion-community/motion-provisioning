@@ -14,9 +14,10 @@ require 'webmock/rspec'
 require 'base64'
 require_relative 'stubbing'
 
-ENV['MOTION_PROVISIONING_EMAIL'] = 'foo@example.com'
-ENV['MOTION_PROVISIONING_PASSWORD'] = 'password'
 WebMock.disable_net_connect!
+
+ENV['MOTION_PROVISIONING_EMAIL'] = 'spaceship@krausefx.com'
+ENV['MOTION_PROVISIONING_PASSWORD'] = 'so_secret'
 ENV['MOTION_PROVISIONING_TEAM_ID'] = 'XXXXXXXXXX'
 
 MotionProvisioning.output_path = 'provisioning_spec'
@@ -31,6 +32,7 @@ RSpec.configure do |config|
   config.before(:each) do
     Dir.glob(File.join(MotionProvisioning.output_path, '*.{p12,cer,certSigningRequest,mobileprovision}')).each { |f| try_delete(f) }
     Spaceship::Portal.client = nil
+    stub_login
   end
 
   # config.before(:each) do

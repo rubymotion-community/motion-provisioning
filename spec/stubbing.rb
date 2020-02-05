@@ -2,31 +2,8 @@ require_relative 'portal/portal_stubbing'
 require_relative 'tunes/tunes_stubbing'
 
 def stub_login
-  stub_request(:get, 'https://itunesconnect.apple.com/itc/static-resources/controllers/login_cntrl.js').
-    to_return(status: 200, body: "itcServiceKey = '1234567890'")
-  stub_request(:get, "https://itunesconnect.apple.com/WebObjects/iTunesConnect.woa").
-    to_return(status: 200, body: "")
-  stub_request(:get, "https://itunesconnect.apple.com/WebObjects/iTunesConnect.woa/wa").
-    to_return(status: 200, body: "")
-
-  stub_request(:get, "https://olympus.itunes.apple.com/v1/session").
-    to_return(status: 200, body: itc_read_fixture_file('olympus_session.json'))
-  stub_request(:get, "https://olympus.itunes.apple.com/v1/app/config?hostname=itunesconnect.apple.com").
-    to_return(status: 200, body: { authServiceKey: 'e0abc' }.to_json, headers: { 'Content-Type' => 'application/json' })
-
-  # Actual login
-  stub_request(:post, "https://idmsa.apple.com/appleauth/auth/signin").
-    with(body: { "accountName" => "foo@example.com", "password" => "password", "rememberMe" => true }.to_json).
-    to_return(status: 200, body: '{}', headers: { 'Set-Cookie' => "myacinfo=abcdef;" })
-
-  # Failed login attempts
-  stub_request(:post, "https://idmsa.apple.com/appleauth/auth/signin?widgetKey=1234567890").
-    with(body: { "accountName" => "bad-username", "password" => "bad-password", "rememberMe" => true }.to_json).
-    to_return(status: 401, body: '{}', headers: { 'Set-Cookie' => 'session=invalid' })
-
-  # List paid teams
-  stub_request(:post, 'https://developer.apple.com/services-account/QH65B2/account/listTeams.action').
-    to_return(status: 200, body: adp_read_fixture_file('listTeams.action.json'), headers: { 'Content-Type' => 'application/json' })
+  itc_stub_login # authentication
+  adp_stub_login # list paid teams
 
   # List free teams
   stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/listTeams.action").
@@ -315,7 +292,6 @@ end
 
 RSpec.configure do |config|
   config.before(:each) do
-    stub_login
     stub_existing_app
     stub_devices
   end
