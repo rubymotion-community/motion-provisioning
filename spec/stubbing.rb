@@ -1,19 +1,5 @@
-require 'webmock/rspec'
-
-# NOTE: Many of these request stubs are copied directly from the Fastlane specs
-
-def adp_read_fixture_file(filename)
-  File.read(File.join('spec', 'portal', 'fixtures', filename))
-end
-
-def itc_read_fixture_file(filename)
-  File.read(File.join('spec', 'tunes', 'fixtures', filename))
-end
-
-def adp_stub_multiple_teams
-  stub_request(:post, 'https://developerservices2.apple.com/services/QH65B2/listTeams.action').
-    to_return(status: 200, body: adp_read_fixture_file('listTeams_multiple.action.json'), headers: { 'Content-Type' => 'application/json' })
-end
+require_relative 'portal/portal_stubbing'
+require_relative 'tunes/tunes_stubbing'
 
 def stub_login
   stub_request(:get, 'https://itunesconnect.apple.com/itc/static-resources/controllers/login_cntrl.js').
