@@ -11,23 +11,12 @@ def stub_login
 end
 
 def stub_devices
-  [:ios, :mac].each do |platform|
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/device/listDevices.action").
-      with(body: { includeRemovedDevices:"false", pageNumber:"1", pageSize:"500", sort:"name=asc", teamId:"XXXXXXXXXX"}).
-      to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
+  adp_stub_devices # only stubs iOS/tvOS requests
 
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/device/listDevices.action").
-      with(body: { deviceClasses: "tvOS", includeRemovedDevices:"false", teamId: 'XXXXXXXXXX', pageSize: "500", pageNumber: "1", sort: 'name=asc' }).
-      to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listDevices.action").
-      with(body: { deviceClasses: "tvOS", includeRemovedDevices:false, pageNumber: 1, pageSize: 500, sort: 'name=asc', teamId: 'XXXXXXXXXX' }.to_plist).
-      to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listDevices.action").
-      with(body: { includeRemovedDevices:false, pageNumber: 1, pageSize: 500, sort: 'name=asc', teamId: 'XXXXXXXXXX' }.to_plist).
-      to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
-  end
+  # Mac
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/mac/device/listDevices.action").
+    with(body: { includeRemovedDevices:"false", pageNumber:"1", pageSize:"500", sort:"name=asc", teamId:"XXXXXXXXXX"}).
+    to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
 end
 
 def stub_existing_app
@@ -286,13 +275,5 @@ def stub_request_certificate(csr, type)
      stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform}/submitDevelopmentCSR.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
        with(:body => { csrContent: csr, teamId: 'XXXXXXXXXX' }.to_plist).
        to_return(:status => 200, :body => adp_read_fixture_file('submitDevelopmentCSR.action.xml').gsub("{certificate_type_id}", certificate[:type_id]).gsub("{certificate_id}", certificate[:id]).gsub('{cert_content}', Base64.encode64(certificate[:content])), :headers => { 'Content-Type' => 'text/x-xml-plist' })
-  end
-end
-
-
-RSpec.configure do |config|
-  config.before(:each) do
-    stub_existing_app
-    stub_devices
   end
 end

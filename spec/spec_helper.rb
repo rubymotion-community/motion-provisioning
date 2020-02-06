@@ -33,6 +33,7 @@ RSpec.configure do |config|
     Dir.glob(File.join(MotionProvisioning.output_path, '*.{p12,cer,certSigningRequest,mobileprovision}')).each { |f| try_delete(f) }
     Spaceship::Portal.client = nil
     stub_login
+    stub_devices
   end
 
   # config.before(:each) do
