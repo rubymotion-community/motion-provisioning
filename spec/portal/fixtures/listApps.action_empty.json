@@ -1,0 +1,16 @@
+{
+    "creationTimestamp": "2015-04-07T10:24:02Z",
+    "resultCode": 0,
+    "userLocale": "en_US",
+    "protocolVersion": "QH65B2",
+    "requestId": null,
+    "requestUrl": "https://developer.apple.com:443//services-account/QH65B2/account/ios/identifiers/listAppIds.action",
+    "responseId": "0d35cf9b-fe1e-4420-b94b-71dce02c2aaa",
+    "isAdmin": true,
+    "isMember": false,
+    "isAgent": true,
+    "pageNumber": 0,
+    "pageSize": 0,
+    "totalRecords": 0,
+    "appIds": []
+}

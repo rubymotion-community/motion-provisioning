@@ -19,44 +19,27 @@ def stub_devices
     to_return(status: 200, body: adp_read_fixture_file('listDevices.action.json'), headers: { 'Content-Type' => 'application/json' })
 end
 
-def stub_existing_app
-  [:ios, :mac].each do |platform|
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/identifiers/listAppIds.action").
-      with(body: { teamId: 'XXXXXXXXXX', pageSize: "500", pageNumber: "1", sort: 'name=asc' }).
-      to_return(status: 200, body: adp_read_fixture_file('listApps.action_existing.json'), headers: { 'Content-Type' => 'application/json' })
+def stub_list_apps(platform, exists: true)
+  normalized_platform = platform == :mac ? :mac : :ios
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{normalized_platform}/identifiers/listAppIds.action").
+    with(body: { teamId: 'XXXXXXXXXX', pageSize: "500", pageNumber: "1", sort: 'name=asc' }).
+    to_return(
+      status: 200,
+      headers: { 'Content-Type' => 'application/json' },
+      body: adp_read_fixture_file(exists ? 'listApps.action_existing.json' : 'listApps.action_empty.json'),
+    )
 
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listAppIds.action?clientId=XABBG36SBA").
-      with(body: { teamId: 'XXXXXXXXXX', pageSize: 500, pageNumber: 1, sort: 'name=asc' }.to_plist).
-      to_return(status: 200, body: adp_read_fixture_file('listApps.action_existing.xml'), headers: { 'Content-Type' => 'text/x-xml-plist' })
-
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/identifiers/getAppIdDetail.action").
-      with(:body => {"appIdId"=>"L42E9BTRAA", "teamId"=>"XXXXXXXXXX"}).
-      to_return(status: 200, body: adp_read_fixture_file('getAppIdDetail.action.json'), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/identifiers/getAppIdDetail.action").
-      with(:body => {"appIdId"=>"L42E9BTRAB", "teamId"=>"XXXXXXXXXX"}).
-      to_return(status: 200, body: adp_read_fixture_file('getAppIdDetail.action.json'), headers: { 'Content-Type' => 'application/json' })
+  if platform == :mac
+    # NOTE: for some reason, Mac also requests list of iOS apps
+    stub_list_apps(:ios, exists: exists)
   end
 end
 
-def stub_missing_app
-  [:ios, :mac].each do |platform|
-    stub_request(:post, "https://developer.apple.com/services-account/qh65b2/account/#{platform.to_s}/identifiers/listappids.action").
-      with(body: { teamid: 'xxxxxxxxxx', pagesize: "500", pagenumber: "1", sort: 'name=asc' }).
-      to_return(status: 200, body: adp_read_fixture_file('listapps.action.json'), headers: { 'content-type' => 'application/json' })
-
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listAppIds.action?clientId=XABBG36SBA").
-      with(body: { teamid: 'xxxxxxxxxx', pagesize: "500", pagenumber: "1", sort: 'name=asc' }.to_plist).
-      to_return(status: 200, body: adp_read_fixture_file('listapps.action.json'), headers: { 'content-type' => 'text/x-xml-plist' })
-
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/identifiers/addAppId.action").
-      with(:body => {"appIdName"=>"My App", "appIdentifierString"=>"com.example.myapp", "explicitIdentifier"=>"com.example.myapp", "gameCenter"=>"on", "inAppPurchase"=>"on", "push"=>"on", "teamId"=>"XXXXXXXXXX", "type"=>"explicit"}).
-      to_return(status: 200, body: adp_read_fixture_file('addAppId.action.explicit.json'), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/addAppId.action?clientId=XABBG36SBA").
-      with(:body => { identifier: "com.example.myapp", name: "My App", teamId: "XXXXXXXXXX" }.to_plist).
-      to_return(status: 200, body: adp_read_fixture_file('addAppId.action.explicit.json'), headers: { 'Content-Type' => 'application/json' })
-  end
+def stub_create_app(platform, bundle_id, app_name)
+  # NOTE: app in response body is hard-coded as ios
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform}/identifiers/addAppId.action").
+    with(body: { "identifier" => bundle_id, "name" => app_name, "gameCenter" => "on", "inAppPurchase" => "on", "teamId" => "XXXXXXXXXX", "type" => "explicit" }).
+    to_return(status: 200, body: adp_read_fixture_file('addAppId.action.explicit.json'), headers: { 'Content-Type' => 'application/json' })
 end
 
 def stub_create_profile(type, platform)

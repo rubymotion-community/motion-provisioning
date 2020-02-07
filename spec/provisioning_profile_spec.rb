@@ -22,9 +22,8 @@ describe "MobileProvision" do
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{cert_platform}_distribution_certificate.cer")
             FileUtils.cp("spec/fixtures/#{cert_platform}_development_certificate.cer", MotionProvisioning.output_path)
             FileUtils.cp("spec/fixtures/#{cert_platform}_distribution_certificate.cer", MotionProvisioning.output_path)
-            stub_existing_certificates
-            stub_existing_app
-            stub_devices
+            stub_list_apps(platform, exists: true)
+            stub_list_certificates(platform, type, exists: true)
           end
 
           def mobileprovision_path(bundle_id, platform, type)
