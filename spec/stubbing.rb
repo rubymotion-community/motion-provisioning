@@ -135,6 +135,50 @@ def stub_create_free_certificate(platform, type, csr)
     to_return(:status => 200, :body => adp_read_fixture_file('submitDevelopmentCSR.action.xml').gsub("{certificate_type_id}", certificate[:type_id]).gsub("{certificate_id}", certificate[:id]).gsub('{cert_content}', Base64.encode64(certificate[:content])), :headers => { 'Content-Type' => 'text/x-xml-plist' })
 end
 
+def stub_list_existing_profiles(type, platform)
+  platform_slug = platform == :mac ? 'mac' : 'ios'
+  body = adp_read_fixture_file('listProvisioningProfiles.action_existing.plist').gsub("{platform}", platform.to_s)
+  if platform == :tvos
+    body.gsub!("{subPlatform}", "tvOS")
+    body.gsub!("<string>ios</string>", "<string>tvOS</string>")
+  else
+    body.gsub!("{subPlatform}", '')
+  end
+
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform_slug}/profile/listProvisioningProfiles.action").
+    to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
+
+  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug}/listProvisioningProfiles.action?includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
+    to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
+end
+
+def stub_list_invalid_profiles(type, platform)
+  normalized_platform = platform == :mac ? :mac : :ios
+
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{normalized_platform}/profile/listProvisioningProfiles.action").
+    to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action.json'), headers: { 'Content-Type' => 'application/json' })
+
+  body = adp_read_fixture_file('listProvisioningProfiles.action_existing_invalid.plist').gsub("{platform}", platform.to_s)
+  if platform == :tvos
+    body.gsub!("{subPlatform}", "tvOS")
+    body.gsub!("<string>ios</string>", "<string>tvOS</string>")
+  else
+    body.gsub!("{subPlatform}", '')
+  end
+  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{normalized_platform}/listProvisioningProfiles.action?includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
+    to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
+end
+
+def stub_list_missing_profiles(type, platform)
+  platform_slug = platform == :mac ? 'mac' : 'ios'
+
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform_slug}/profile/listProvisioningProfiles.action").
+    to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action.plist'), headers: { 'Content-Type' => 'text/x-xml-plist' })
+
+  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug}/listProvisioningProfiles.action?includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
+    to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action.plist'), headers: { 'Content-Type' => 'text/x-xml-plist' })
+end
+
 def stub_create_profile(type, platform)
   normalized_platform = platform == :mac ? :mac : :ios
 
@@ -213,48 +257,4 @@ def stub_download_profile(type, platform)
   stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug}/downloadTeamProvisioningProfile.action").
     with(:body => { appIdId: 'L42E9BTRAB', teamId: "XXXXXXXXXX"}.to_plist).
     to_return(status: 200, body: adp_read_fixture_file("download_team_provisioning_profile.action.xml").gsub("{profile}", Base64.encode64(profile_content)), headers: { 'Content-Type' => 'text/x-xml-plist' })
-end
-
-def stub_list_existing_profiles(type, platform)
-  platform_slug = platform == :mac ? 'mac' : 'ios'
-  body = adp_read_fixture_file('listProvisioningProfiles.action_existing.plist').gsub("{platform}", platform.to_s)
-  if platform == :tvos
-    body.gsub!("{subPlatform}", "tvOS")
-    body.gsub!("<string>ios</string>", "<string>tvOS</string>")
-  else
-    body.gsub!("{subPlatform}", '')
-  end
-
-  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform_slug}/profile/listProvisioningProfiles.action").
-    to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
-
-  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug}/listProvisioningProfiles.action?includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
-    to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
-end
-
-def stub_list_invalid_profiles(type, platform)
-  normalized_platform = platform == :mac ? :mac : :ios
-
-  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{normalized_platform}/profile/listProvisioningProfiles.action").
-    to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action.json'), headers: { 'Content-Type' => 'application/json' })
-
-  body = adp_read_fixture_file('listProvisioningProfiles.action_existing_invalid.plist').gsub("{platform}", platform.to_s)
-  if platform == :tvos
-    body.gsub!("{subPlatform}", "tvOS")
-    body.gsub!("<string>ios</string>", "<string>tvOS</string>")
-  else
-    body.gsub!("{subPlatform}", '')
-  end
-  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{normalized_platform}/listProvisioningProfiles.action?includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
-    to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
-end
-
-def stub_list_missing_profiles(type, platform)
-  platform_slug = platform == :mac ? 'mac' : 'ios'
-
-  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform_slug}/profile/listProvisioningProfiles.action").
-    to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action.plist'), headers: { 'Content-Type' => 'text/x-xml-plist' })
-
-  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug}/listProvisioningProfiles.action?includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
-    to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action.plist'), headers: { 'Content-Type' => 'text/x-xml-plist' })
 end
