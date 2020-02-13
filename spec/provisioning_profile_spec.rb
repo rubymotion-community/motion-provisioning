@@ -56,9 +56,9 @@ describe "MobileProvision" do
           end
 
           it "can create new .mobileprovision" do
-            stub_list_missing_profiles(type, platform)
-            stub_create_profile(type, platform)
-            stub_download_profile(type, platform)
+            stub_list_profiles(platform, type, exists: false)
+            stub_create_profile(platform, type)
+            stub_download_profile(platform, type)
 
             path = MotionProvisioning.profile(bundle_identifier: bundle_id,
               platform: platform,
@@ -69,9 +69,9 @@ describe "MobileProvision" do
           end
 
           it "can download existing .mobileprovision" do
-            stub_create_profile(type, platform) if type == :adhoc
-            stub_list_existing_profiles(type, platform)
-            stub_download_profile(type, platform)
+            stub_create_profile(platform, type) if type == :adhoc
+            stub_list_profiles(platform, type, exists: true)
+            stub_download_profile(platform, type)
 
             path = MotionProvisioning.profile(bundle_identifier: bundle_id,
               platform: platform,
@@ -82,10 +82,10 @@ describe "MobileProvision" do
           end
 
           it "can repair existing .mobileprovision" do
-            stub_list_invalid_profiles(type, platform)
-            stub_create_profile(type, platform) if type == :adhoc
-            stub_repair_profile(type, platform)
-            stub_download_profile(type, platform)
+            stub_list_profiles(platform, type, invalid: true)
+            stub_create_profile(platform, type) if type == :adhoc
+            stub_repair_profile(platform, type)
+            stub_download_profile(platform, type)
 
             path = MotionProvisioning.profile(bundle_identifier: bundle_id,
               platform: platform,

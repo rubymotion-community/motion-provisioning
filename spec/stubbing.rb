@@ -135,51 +135,29 @@ def stub_create_free_certificate(platform, type, csr)
     to_return(:status => 200, :body => adp_read_fixture_file('submitDevelopmentCSR.action.xml').gsub("{certificate_type_id}", certificate[:type_id]).gsub("{certificate_id}", certificate[:id]).gsub('{cert_content}', Base64.encode64(certificate[:content])), :headers => { 'Content-Type' => 'text/x-xml-plist' })
 end
 
-def stub_list_existing_profiles(type, platform)
-  platform_slug = platform == :mac ? 'mac' : 'ios'
-  body = adp_read_fixture_file('listProvisioningProfiles.action_existing.plist').gsub("{platform}", platform.to_s)
-  if platform == :tvos
-    body.gsub!("{subPlatform}", "tvOS")
-    body.gsub!("<string>ios</string>", "<string>tvOS</string>")
-  else
-    body.gsub!("{subPlatform}", '')
-  end
-
-  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform_slug}/profile/listProvisioningProfiles.action").
-    to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
-
-  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug}/listProvisioningProfiles.action?includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
-    to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
-end
-
-def stub_list_invalid_profiles(type, platform)
+def stub_list_profiles(platform, type, exists: true, invalid: false)
   normalized_platform = platform == :mac ? :mac : :ios
 
-  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{normalized_platform}/profile/listProvisioningProfiles.action").
-    to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action.json'), headers: { 'Content-Type' => 'application/json' })
-
-  body = adp_read_fixture_file('listProvisioningProfiles.action_existing_invalid.plist').gsub("{platform}", platform.to_s)
+  # NOTE: developerservices2 request is used for fetching additional information about profile
+  if invalid
+    filename = 'listProvisioningProfiles.action_existing_invalid.plist'
+  elsif exists
+    filename = 'listProvisioningProfiles.action_existing.plist'
+  else
+    filename = 'listProvisioningProfiles.action_empty.plist'
+  end
+  body = adp_read_fixture_file(filename).gsub("{platform}", platform.to_s)
   if platform == :tvos
     body.gsub!("{subPlatform}", "tvOS")
     body.gsub!("<string>ios</string>", "<string>tvOS</string>")
   else
     body.gsub!("{subPlatform}", '')
   end
-  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{normalized_platform}/listProvisioningProfiles.action?includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
+  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{normalized_platform}/listProvisioningProfiles.action?includeExpiredProfiles=true&includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
     to_return(status: 200, body: body, headers: { 'Content-Type' => 'text/x-xml-plist' })
 end
 
-def stub_list_missing_profiles(type, platform)
-  platform_slug = platform == :mac ? 'mac' : 'ios'
-
-  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform_slug}/profile/listProvisioningProfiles.action").
-    to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action.plist'), headers: { 'Content-Type' => 'text/x-xml-plist' })
-
-  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug}/listProvisioningProfiles.action?includeInactiveProfiles=true&onlyCountLists=true&teamId=XXXXXXXXXX").
-    to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action.plist'), headers: { 'Content-Type' => 'text/x-xml-plist' })
-end
-
-def stub_create_profile(type, platform)
+def stub_create_profile(platform, type)
   normalized_platform = platform == :mac ? :mac : :ios
 
   distribution_type = case type
@@ -197,15 +175,19 @@ def stub_create_profile(type, platform)
     "teamId" => "XXXXXXXXXX"
   }
 
-  body["subPlatform"] = "tvOS" if platform == :tvos
-  body["deviceIds"] = "DDDDDDDDDD" if type != :distribution
+  if platform == :tvos
+    body["subPlatform"] = "tvOS"
+    body["deviceIds"] = "EEEEEEEEEE" if type != :distribution
+  else
+    body["deviceIds"] = "DDDDDDDDDD" if type != :distribution
+  end
 
-  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{normalized_platform.to_s}/profile/createProvisioningProfile.action").
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{normalized_platform}/profile/createProvisioningProfile.action").
     with(:body => body).
-    to_return(status: 200, body: adp_read_fixture_file('create_profile_success.json').gsub('{platform}', platform.to_s), headers: { 'content-type' => 'application/json' })
+    to_return(status: 200, body: adp_read_fixture_file('createProvisioningProfile.action_success.json').gsub('{platform}', platform.to_s), headers: { 'content-type' => 'application/json' })
 end
 
-def stub_repair_profile(type, platform)
+def stub_repair_profile(platform, type)
   normalized_platform = platform == :mac ? :mac : :ios
   distribution_type = case type
                       when :distribution then "store"
@@ -213,6 +195,11 @@ def stub_repair_profile(type, platform)
                       when :adhoc then "store"
                       end
   certificate_type = type == :development ? :development : :distribution
+
+  # NOTE: for some reason, even mac makes this ios request
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/ios/profile/listProvisioningProfiles.action").
+    with(body: { "pageNumber"=>"1", "pageSize"=>"1", "sort"=>"name=asc", "teamId"=>"XXXXXXXXXX" }).
+    to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action_existing.json'), headers: {})
 
   body = {
     "appIdId"=>"572XTN75U2",
@@ -222,39 +209,29 @@ def stub_repair_profile(type, platform)
     "provisioningProfileName"=>"(MotionProvisioning) com.example.myapp #{platform} #{type}",
     "teamId"=>"XXXXXXXXXX"
   }
-
-  body["subPlatform"] = "tvOS" if platform == :tvos
-  body["deviceIds"] = "DDDDDDDDDD" if type != :distribution
-
-  if platform == :mac
-    # Spaceship::PortalClient makes a request to fetch_csrf_token_for_provisioning but does not specify "mac" as the platform
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/ios/profile/listProvisioningProfiles.action").
-         with(body: {"pageNumber"=>"1", "pageSize"=>"1", "sort"=>"name=asc", "teamId"=>"XXXXXXXXXX"}).
-         to_return(status: 200, body: adp_read_fixture_file('listProvisioningProfiles.action.json'), headers: {})
+  if platform == :tvos
+    body["subPlatform"] = "tvOS"
+    body["deviceIds"] = "EEEEEEEEEE" if type != :distribution
+  else
+    body["deviceIds"] = "DDDDDDDDDD" if type != :distribution
   end
-
   stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{normalized_platform}/profile/regenProvisioningProfile.action").
-    with(:body => body).to_return(status: 200, body: adp_read_fixture_file('repair_profile_success.json'), headers: { 'content-type' => 'application/json' })
+    with(:body => body).
+      to_return(status: 200, body: adp_read_fixture_file('regenProvisioningProfile.action_success.json'), headers: { 'content-type' => 'application/json' })
 end
 
-def stub_download_profile(type, platform)
-  platform_slug = platform == :mac ? 'mac' : 'ios'
-  profile_content = adp_read_fixture_file("downloaded_provisioning_profile.mobileprovision")
+def stub_download_profile(platform, type)
+  normalized_platform = platform == :mac ? :mac : :ios
   certificate_type = type == :development ? :development : :distribution
-
+  certificate = SPEC_CERTIFICATES[normalized_platform][certificate_type]
   profile_id = 'FB8594WWQG'
-  stub_request(:get, "https://developer.apple.com/services-account/QH65B2/account/#{platform_slug}/profile/downloadProfileContent?provisioningProfileId=#{profile_id}&&teamId=XXXXXXXXXX").
+
+  profile_content = adp_read_fixture_file("downloadProfileContent.mobileprovision")
+  stub_request(:get, "https://developer.apple.com/services-account/QH65B2/account/#{normalized_platform}/profile/downloadProfileContent?provisioningProfileId=#{profile_id}&&teamId=XXXXXXXXXX").
     to_return(status: 200, body: profile_content)
 
-  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform_slug}/profile/getProvisioningProfile.action").
+  response_body = adp_read_fixture_file('getProvisioningProfile.action.json').gsub("{certificate_id}", certificate[:id])
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{normalized_platform}/profile/getProvisioningProfile.action").
     with(:body => {"provisioningProfileId"=>profile_id, "teamId"=>"XXXXXXXXXX"}).
-    to_return(status: 200, body: adp_read_fixture_file('getProvisioningProfile.action.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][certificate_type][:id]), headers: { 'Content-Type' => 'application/json' })
-
-  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug}/downloadProvisioningProfile.action").
-    with(:body => { provisioningProfileId: profile_id, teamId: 'XXXXXXXXXX' }.to_plist).
-    to_return(status: 200, body: adp_read_fixture_file("download_team_provisioning_profile.action.xml").gsub("{profile}", Base64.encode64(profile_content)), headers: { 'Content-Type' => 'text/x-xml-plist' })
-
-  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform_slug}/downloadTeamProvisioningProfile.action").
-    with(:body => { appIdId: 'L42E9BTRAB', teamId: "XXXXXXXXXX"}.to_plist).
-    to_return(status: 200, body: adp_read_fixture_file("download_team_provisioning_profile.action.xml").gsub("{profile}", Base64.encode64(profile_content)), headers: { 'Content-Type' => 'text/x-xml-plist' })
+    to_return(status: 200, body: response_body, headers: { 'Content-Type' => 'application/json' })
 end
