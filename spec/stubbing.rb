@@ -42,99 +42,97 @@ def stub_create_app(platform, bundle_id, app_name)
     to_return(status: 200, body: adp_read_fixture_file('addAppId.action.explicit.json'), headers: { 'Content-Type' => 'application/json' })
 end
 
-def stub_existing_certificates
-  [:ios, :mac].each do |platform|
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/downloadDistributionCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
+def stub_list_certificates(platform, type, exists: true)
+  # adp_stub_certificates # can't use this because we need to change the response values
+
+  normalized_platform = platform == :mac ? :mac : :ios
+  certificate_type = type == :development ? :development : :distribution
+
+  request_body = {
+    "pageNumber" => "1",
+    "pageSize" => "500",
+    "sort" => "certRequestStatusCode=asc",
+    "teamId" => "XXXXXXXXXX",
+    "types" => case normalized_platform
+      when :ios
+        "83Q87W3TGH,WXV89964HE,5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,MD8Q2VRT6A,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"
+      when :mac
+        "83Q87W3TGH,WXV89964HE,749Y1QAGU7,HXZEUKP0FP,2PQI8IDXNH,OYVN2GW35E,W0EURJRMC5,CDZ7EMXIZ1,HQ4KP3I34R,DIVN2GW3XT"
+      end
+  }
+
+  if exists
+    response_body = adp_read_fixture_file('listCertRequests.action_existing.json').
+                      gsub("{certificate_id}", SPEC_CERTIFICATES[platform][certificate_type][:id]).
+                      gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][certificate_type][:type_id])
+  else
+    response_body = adp_read_fixture_file('listCertRequests.action_empty.json')
+  end
+
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{normalized_platform}/certificate/listCertRequests.action").
+    with(body: request_body).
+    to_return(status: 200, body: response_body, headers: { 'Content-Type' => 'application/json' })
+
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{normalized_platform}/certificate/listCertRequests.action").
+    with(body: { "pageNumber" => "1", "pageSize" => "500", "sort" => "certRequestStatusCode=asc", "teamId" => "XXXXXXXXXX", "types" => SPEC_CERTIFICATES[platform][certificate_type][:type_id]}).
+    to_return(status: 200, body: response_body, headers: { 'Content-Type' => 'application/json' })
+
+  if exists
+    # Requests for additional details about certificates use developerservices2 domain
+    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{normalized_platform}/downloadDistributionCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
       to_return(status: 200, body: adp_read_fixture_file('downloadDistributionCerts_existing.xml').gsub('{certificate}', Base64.encode64(SPEC_CERTIFICATES[platform][:distribution][:content])), headers: { 'Content-Type' => 'text/x-xml-plist' })
 
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listAllDevelopmentCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
+    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{normalized_platform}/listAllDevelopmentCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
       to_return(status: 200, body: adp_read_fixture_file('listAllDevelopmentCerts_existing.xml').gsub('{certificate}', Base64.encode64(SPEC_CERTIFICATES[platform][:development][:content])), headers: { 'Content-Type' => 'text/x-xml-plist' })
+  end
 
-     stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
-       with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,MD8Q2VRT6A,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
-       to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action_existing.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][:development][:id]).gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][:development][:type_id]), headers: { 'Content-Type' => 'application/json' })
-
-     stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
-       with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"749Y1QAGU7,HXZEUKP0FP,2PQI8IDXNH,OYVN2GW35E,W0EURJRMC5,CDZ7EMXIZ1,HQ4KP3I34R,DIVN2GW3XT"}).
-       to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action_existing.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][:development][:id]).gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][:development][:type_id]), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
-      with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>SPEC_CERTIFICATES[platform][:distribution][:type_id]}).
-      to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action_existing.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][:distribution][:id]).gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][:distribution][:type_id]), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
-      with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>SPEC_CERTIFICATES[platform][:development][:type_id]}).
-      to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action_existing.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][:development][:id]).gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][:development][:type_id]), headers: { 'Content-Type' => 'application/json' })
+  if platform == :mac
+    # NOTE: for some reason, Mac also requests list of iOS certificates
+    stub_list_certificates(:ios, type, exists: exists)
   end
 end
 
-def stub_missing_then_existing_certificates
-  [:ios, :mac].each do |platform|
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/downloadDistributionCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
-      to_return(status: 200, body: adp_read_fixture_file('downloadDistributionCerts_existing.xml').gsub('{certificate}', Base64.encode64(SPEC_CERTIFICATES[:ios][:distribution][:content])), headers: { 'Content-Type' => 'text/x-xml-plist' })
+# Only used for free development team
+def stub_missing_then_existing_certificates(platform)
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform}/certificate/listCertRequests.action").
+    with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"83Q87W3TGH,WXV89964HE,5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,MD8Q2VRT6A,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
+    to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action_existing.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][:development][:id]).gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][:development][:type_id]), headers: { 'Content-Type' => 'application/json' })
 
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
-      with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,MD8Q2VRT6A,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
-      to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][:development][:id]).gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][:development][:type_id]), headers: { 'Content-Type' => 'application/json' })
-
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listAllDevelopmentCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
-      to_return(status: 200, body: adp_read_fixture_file('listAllDevelopmentCerts_missing.xml'), headers: { 'Content-Type' => 'text/x-xml-plist' }).
-      then.
-      to_return(status: 200, body: adp_read_fixture_file('listAllDevelopmentCerts_existing.xml').gsub('{certificate}', Base64.encode64(SPEC_CERTIFICATES[:ios][:development][:content])), headers: { 'Content-Type' => 'text/x-xml-plist' })
-  end
+  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform}/listAllDevelopmentCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
+    to_return(status: 200, body: adp_read_fixture_file('listAllDevelopmentCerts_missing.xml'), headers: { 'Content-Type' => 'text/x-xml-plist' }).
+    then.
+    to_return(status: 200, body: adp_read_fixture_file('listAllDevelopmentCerts_existing.xml').gsub('{certificate}', Base64.encode64(SPEC_CERTIFICATES[:ios][:development][:content])), headers: { 'Content-Type' => 'text/x-xml-plist' })
 end
 
-def stub_revoke_certificate(type)
-  [:ios, :mac].each do |platform|
-    certificate = SPEC_CERTIFICATES[platform][type]
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/revokeCertificate.action").
-      with(:body => {"certificateId"=>certificate[:id], "teamId"=>"XXXXXXXXXX", "type"=>certificate[:type_id]}).
-      to_return(status: 200, body: adp_read_fixture_file('revokeCertificate.action.json'), headers: { 'Content-Type' => 'application/json' })
+def stub_revoke_certificate(platform, type)
+  certificate = SPEC_CERTIFICATES[platform][type]
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/revokeCertificate.action").
+    with(:body => {"certificateId"=>certificate[:id], "teamId"=>"XXXXXXXXXX", "type"=>certificate[:type_id]}).
+    to_return(status: 200, body: adp_read_fixture_file('revokeCertificate.action.json'), headers: { 'Content-Type' => 'application/json' })
 
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/ios/revokeDevelopmentCert.action?clientId=XABBG36SBA").
-      with(:body => { "serialNumber" => "EA57CB138947BCB", "teamId" => "XXXXXXXXXX" }.to_plist).
-      to_return(:status => 200, :body => { "certRequests" => [] }.to_plist, :headers => {})
-  end
+  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/ios/revokeDevelopmentCert.action?clientId=XABBG36SBA").
+    with(:body => { "serialNumber" => "EA57CB138947BCB", "teamId" => "XXXXXXXXXX" }.to_plist).
+    to_return(:status => 200, :body => { "certRequests" => [] }.to_plist, :headers => {})
 end
 
-def stub_download_certificate(type)
-  [:ios, :mac].each do |platform|
-    certificate = SPEC_CERTIFICATES[platform][type]
+def stub_download_certificate(platform, type)
+  certificate = SPEC_CERTIFICATES[platform][type]
   stub_request(:get, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/downloadCertificateContent.action?certificateId=#{certificate[:id]}&teamId=XXXXXXXXXX&type=#{certificate[:type_id]}").
-    to_return(:status => 200, :body => certificate[:content], :headers => {}).then
-  end
+    to_return(:status => 200, :body => certificate[:content], :headers => {})
 end
 
-def stub_missing_certificates
-  [:ios, :mac].each do |platform|
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/downloadDistributionCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
-      to_return(status: 200, body: adp_read_fixture_file('downloadDistributionCerts_missing.xml'), headers: { 'Content-Type' => 'text/x-xml-plist' })
-    stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform.to_s}/listAllDevelopmentCerts.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
-      to_return(status: 200, body: adp_read_fixture_file('listAllDevelopmentCerts_missing.xml'), headers: { 'Content-Type' => 'text/x-xml-plist' })
-
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
-      with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>"5QPB9NHCEI,R58UK2EWSO,9RQEK7MSXA,LA30L5BJEU,BKLRAVXMGM,UPV3DW712I,Y3B2F3TYSI,3T2ZP62QW8,E5D663CMZW,4APLUP237T,MD8Q2VRT6A,T44PTHVNID,DZQUP8189Y,FGQUP4785Z,S5WE21TULA,3BQKVH9I2X,FUOY7LWJET"}).
-      to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action.json').gsub("{certificate_id}", SPEC_CERTIFICATES[platform][:development][:id]).gsub("{certificate_type_id}", SPEC_CERTIFICATES[platform][:development][:type_id]), headers: { 'Content-Type' => 'application/json' })
-
-    Spaceship::Portal::Certificate::CERTIFICATE_TYPE_IDS.keys.each do |type|
-      stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform.to_s}/certificate/listCertRequests.action").
-         with(:body => {"pageNumber"=>"1", "pageSize"=>"500", "sort"=>"certRequestStatusCode=asc", "teamId"=>"XXXXXXXXXX", "types"=>type}).
-        to_return(status: 200, body: adp_read_fixture_file('listCertRequests.action.json'), headers: { 'Content-Type' => 'application/json' })
-    end
-  end
+def stub_create_certificate(platform, type, csr)
+  certificate = SPEC_CERTIFICATES[platform][type]
+  stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform}/certificate/submitCertificateRequest.action").
+    with(body: {"appIdId"=>nil, "csrContent"=>csr, "specialIdentifierDisplayId"=>nil, "teamId"=>"XXXXXXXXXX", "type"=>certificate[:type_id]}).
+    to_return(status: 200, body: adp_read_fixture_file('submitCertificateRequest.action.json').gsub("{certificate_type_id}", certificate[:type_id]).gsub("{certificate_id}", certificate[:id]), headers: { 'Content-Type' => 'application/json' })
 end
 
-def stub_request_certificate(csr, type)
-  [:ios, :mac].each do |platform|
-    certificate = SPEC_CERTIFICATES[platform][type]
-    stub_request(:post, "https://developer.apple.com/services-account/QH65B2/account/#{platform}/certificate/submitCertificateRequest.action").
-      with(:body => {"appIdId"=>nil, "csrContent"=>csr, "teamId"=>"XXXXXXXXXX", "type"=>certificate[:type_id]}).
-      to_return(status: 200, body: adp_read_fixture_file('submitCertificateRequest.action.json').gsub("{certificate_type_id}", certificate[:type_id]).gsub("{certificate_id}", certificate[:id]), headers: { 'Content-Type' => 'application/json' })
-
-     stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform}/submitDevelopmentCSR.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
-       with(:body => { csrContent: csr, teamId: 'XXXXXXXXXX' }.to_plist).
-       to_return(:status => 200, :body => adp_read_fixture_file('submitDevelopmentCSR.action.xml').gsub("{certificate_type_id}", certificate[:type_id]).gsub("{certificate_id}", certificate[:id]).gsub('{cert_content}', Base64.encode64(certificate[:content])), :headers => { 'Content-Type' => 'text/x-xml-plist' })
-  end
+def stub_create_free_certificate(platform, type, csr)
+  certificate = SPEC_CERTIFICATES[platform][type]
+  stub_request(:post, "https://developerservices2.apple.com/services/QH65B2/#{platform}/submitDevelopmentCSR.action?clientId=XABBG36SBA&teamId=XXXXXXXXXX").
+    with(:body => { csrContent: csr, teamId: 'XXXXXXXXXX' }.to_plist).
+    to_return(:status => 200, :body => adp_read_fixture_file('submitDevelopmentCSR.action.xml').gsub("{certificate_type_id}", certificate[:type_id]).gsub("{certificate_id}", certificate[:id]).gsub('{cert_content}', Base64.encode64(certificate[:content])), :headers => { 'Content-Type' => 'text/x-xml-plist' })
 end
 
 def stub_create_profile(type, platform)
