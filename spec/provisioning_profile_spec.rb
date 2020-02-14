@@ -22,7 +22,7 @@ describe "MobileProvision" do
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{cert_platform}_distribution_certificate.cer")
             FileUtils.cp("spec/fixtures/#{cert_platform}_development_certificate.cer", MotionProvisioning.output_path)
             FileUtils.cp("spec/fixtures/#{cert_platform}_distribution_certificate.cer", MotionProvisioning.output_path)
-            stub_list_apps(platform, exists: true)
+            stub_list_apps(platform, exists: true, free: free)
             stub_list_certificates(platform, type, exists: true)
           end
 
@@ -56,9 +56,10 @@ describe "MobileProvision" do
           end
 
           it "can create new .mobileprovision" do
-            stub_list_profiles(platform, type, exists: false)
+            stub_list_profiles(platform, type, exists: false, free: free)
+            stub_list_devices_free(platform) if free
             stub_create_profile(platform, type)
-            stub_download_profile(platform, type)
+            stub_download_profile(platform, type, free: free)
 
             path = MotionProvisioning.profile(bundle_identifier: bundle_id,
               platform: platform,
@@ -70,8 +71,8 @@ describe "MobileProvision" do
 
           it "can download existing .mobileprovision" do
             stub_create_profile(platform, type) if type == :adhoc
-            stub_list_profiles(platform, type, exists: true)
-            stub_download_profile(platform, type)
+            stub_list_profiles(platform, type, exists: true, free: free)
+            stub_download_profile(platform, type, free: free)
 
             path = MotionProvisioning.profile(bundle_identifier: bundle_id,
               platform: platform,
@@ -82,10 +83,11 @@ describe "MobileProvision" do
           end
 
           it "can repair existing .mobileprovision" do
-            stub_list_profiles(platform, type, invalid: true)
+            stub_list_profiles(platform, type, invalid: true, free: free)
+            stub_list_devices_free(platform) if free
             stub_create_profile(platform, type) if type == :adhoc
             stub_repair_profile(platform, type)
-            stub_download_profile(platform, type)
+            stub_download_profile(platform, type, free: free)
 
             path = MotionProvisioning.profile(bundle_identifier: bundle_id,
               platform: platform,

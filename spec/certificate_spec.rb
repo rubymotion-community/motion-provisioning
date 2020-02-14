@@ -16,18 +16,10 @@ describe "Certificates" do
           end
 
           it "can create new certificate" do
-            if free
-              stub_missing_then_existing_certificates(platform)
-            else
-              stub_list_certificates(platform, type, exists: false)
-            end
+            stub_list_certificates(platform, type, exists: false, free: free)
             $motion_provisioninig_csr = Spaceship.certificate.create_certificate_signing_request
             csr, pkey = $motion_provisioninig_csr
-            if free
-              stub_create_free_certificate(platform, type, csr.to_s)
-            else
-              stub_create_certificate(platform, type, csr.to_s)
-            end
+            stub_create_certificate(platform, type, csr.to_s, free: free)
             stub_download_certificate(platform, type)
 
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{platform}_#{type}_private_key.p12")
@@ -41,11 +33,7 @@ describe "Certificates" do
             stub_revoke_certificate(platform, type)
             $motion_provisioninig_csr = Spaceship.certificate.create_certificate_signing_request
             csr, pkey = $motion_provisioninig_csr
-            if free
-              stub_create_free_certificate(platform, type, csr.to_s)
-            else
-              stub_create_certificate(platform, type, csr.to_s)
-            end
+            stub_create_certificate(platform, type, csr.to_s, free: free)
             stub_download_certificate(platform, type)
 
             allow(STDIN).to receive(:gets).and_return('y', "\n")
