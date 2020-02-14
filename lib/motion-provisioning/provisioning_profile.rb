@@ -30,8 +30,7 @@ module MotionProvisioning
         end
       end
 
-      # ensure a client is created and logged in
-      client
+      client # ensure a client is created and logged in
 
       app = Application.find_or_create(bundle_id: bundle_id, name: app_name, mac: platform == :mac)
 
@@ -78,6 +77,7 @@ module MotionProvisioning
           certificate_platform = platform == :mac ? :mac : :ios
           certificate_sha1 = OpenSSL::Digest::SHA1.new(File.read(File.join(output_path, "#{certificate_platform}_distribution_certificate.cer")))
           cert = client.distribution_certificates(mac: platform == :mac).detect do |c|
+            # Compare downloaded cert content against local cert content to make sure they match
             OpenSSL::Digest::SHA1.new(c['certContent'].read) == certificate_sha1
           end
 

@@ -57,7 +57,7 @@ module MotionProvisioning
           Utils.log("Error", "Something went wrong when trying to create a new certificate.")
           abort
         end
-      # There are certificates in the server, but none is installed locally. Revoke all and create a new one.
+      # There are certificates in the server, but none are installed locally. Revoke all and create a new one.
       elsif installed_certificate.nil?
         Utils.log("Error", "None of the available certificates (#{certificates.count}) is installed on the local machine. Revoking...")
 

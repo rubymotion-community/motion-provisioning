@@ -6,8 +6,8 @@ require 'motion-provisioning/version'
 Gem::Specification.new do |spec|
   spec.name          = "motion-provisioning"
   spec.version       = MotionProvisioning::VERSION
-  spec.authors       = ["Mark Villacampa"]
-  spec.email         = ["m@markvillacampa.com"]
+  spec.authors       = ["Mark Villacampa", 'Andrew Havens']
+  spec.email         = ["m@markvillacampa.com", 'email@andrewhavens.com']
 
   spec.summary       = %q{Simplified provisioning for RubyMotion iOS, tvOS and macOS apps.}
   spec.description   = %q{A small library that manages certificates and profiles automatically, from the command line, with minimal configuration.}
@@ -28,6 +28,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.1'
   spec.add_development_dependency 'rspec_junit_formatter', '~> 0.2'
-  spec.add_development_dependency 'webmock', '~> 1.21'
+  spec.add_development_dependency 'webmock', '~> 3.7'
   spec.add_development_dependency 'simplecov', '~> 0.12'
 end

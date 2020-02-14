@@ -1,8 +1,7 @@
 language: objective-c
-osx_image: xcode8
-rvm:
-  - 2.2.1
-before_install:
+osx_image: xcode11.3
+before_script:
   - ./bin/setup
 script:
-  - rspec
+  - bundle exec rspec -t ~free
+  - bundle exec rspec -t free

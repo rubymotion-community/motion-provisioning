@@ -5,7 +5,7 @@ module Spaceship
     def teams
       return @teams if @teams
       req = request(:post, "https://developerservices2.apple.com/services/#{PROTOCOL_VERSION}/listTeams.action", nil, {
-        'X-Xcode-Version' => XCODE_VERSION # necessary in order to work with Xcode free team
+        'X-Xcode-Version' => XCODE_VERSION # necessary in order to list Xcode free team
       })
       @teams = parse_response(req, 'teams').sort_by do |team|
         [

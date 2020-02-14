@@ -2,11 +2,11 @@ describe "MobileProvision" do
   [:ios, :tvos, :mac].each do |platform|
     describe platform.to_s do
       [:distribution, :adhoc, :development, :development_free].each do |type|
-        next if platform == :mac && type == :development_free
+        free = type == :development_free
+        next if platform == :mac && free
 
-        describe type.to_s.capitalize do
+        describe type.to_s.capitalize, platform: platform.to_s, type: type.to_s, free: free do
 
-          free = (type == :development_free && platform != :mac)
           type = :development if type == :development_free
           cert_type = type == :development ? :development : :distribution
           cert_platform = platform == :mac ? :mac : :ios
@@ -22,9 +22,8 @@ describe "MobileProvision" do
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{cert_platform}_distribution_certificate.cer")
             FileUtils.cp("spec/fixtures/#{cert_platform}_development_certificate.cer", MotionProvisioning.output_path)
             FileUtils.cp("spec/fixtures/#{cert_platform}_distribution_certificate.cer", MotionProvisioning.output_path)
-            stub_existing_certificates
-            stub_existing_app
-            stub_devices
+            stub_list_apps(platform, exists: true, free: free)
+            stub_list_certificates(platform, type, exists: true)
           end
 
           def mobileprovision_path(bundle_id, platform, type)
@@ -57,9 +56,10 @@ describe "MobileProvision" do
           end
 
           it "can create new .mobileprovision" do
-            stub_list_missing_profiles(type, platform)
-            stub_create_profile(type, platform)
-            stub_download_profile(type, platform)
+            stub_list_profiles(platform, type, exists: false, free: free)
+            stub_list_devices_free(platform) if free
+            stub_create_profile(platform, type)
+            stub_download_profile(platform, type, free: free)
 
             path = MotionProvisioning.profile(bundle_identifier: bundle_id,
               platform: platform,
@@ -70,9 +70,9 @@ describe "MobileProvision" do
           end
 
           it "can download existing .mobileprovision" do
-            stub_create_profile(type, platform) if type == :adhoc
-            stub_list_existing_profiles(type, platform)
-            stub_download_profile(type, platform)
+            stub_create_profile(platform, type) if type == :adhoc
+            stub_list_profiles(platform, type, exists: true, free: free)
+            stub_download_profile(platform, type, free: free)
 
             path = MotionProvisioning.profile(bundle_identifier: bundle_id,
               platform: platform,
@@ -83,10 +83,11 @@ describe "MobileProvision" do
           end
 
           it "can repair existing .mobileprovision" do
-            stub_list_invalid_profiles(type, platform)
-            stub_create_profile(type, platform) if type == :adhoc
-            stub_repair_profile(type, platform)
-            stub_download_profile(type, platform)
+            stub_list_profiles(platform, type, invalid: true, free: free)
+            stub_list_devices_free(platform) if free
+            stub_create_profile(platform, type) if type == :adhoc
+            stub_repair_profile(platform, type)
+            stub_download_profile(platform, type, free: free)
 
             path = MotionProvisioning.profile(bundle_identifier: bundle_id,
               platform: platform,

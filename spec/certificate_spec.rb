@@ -3,11 +3,11 @@ describe "Certificates" do
   [:ios, :mac].each do |platform|
     describe platform.to_s do
       [:distribution, :development_free, :development].each do |type|
-        next if platform == :mac && type == :development_free
+        free = type == :development_free
+        next if platform == :mac && free
 
-        describe type.to_s.capitalize do
+        describe type.to_s.capitalize, platform: platform.to_s, type: type.to_s, free: free do
 
-          free = type == :development_free
           type = :development if type == :development_free
           let(:certificate) { SPEC_CERTIFICATES[platform][type] }
 
@@ -16,15 +16,11 @@ describe "Certificates" do
           end
 
           it "can create new certificate" do
-            if free
-              stub_missing_then_existing_certificates
-            else
-              stub_missing_certificates
-            end
+            stub_list_certificates(platform, type, exists: false, free: free)
             $motion_provisioninig_csr = Spaceship.certificate.create_certificate_signing_request
             csr, pkey = $motion_provisioninig_csr
-            stub_request_certificate(csr.to_s, type)
-            stub_download_certificate(type)
+            stub_create_certificate(platform, type, csr.to_s, free: free)
+            stub_download_certificate(platform, type)
 
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{platform}_#{type}_private_key.p12")
 
@@ -33,20 +29,20 @@ describe "Certificates" do
           end
 
           it "can create new certificate revoking an existing one" do
-            stub_existing_certificates
-            stub_revoke_certificate(type)
+            stub_list_certificates(platform, type, exists: true)
+            stub_revoke_certificate(platform, type)
             $motion_provisioninig_csr = Spaceship.certificate.create_certificate_signing_request
             csr, pkey = $motion_provisioninig_csr
-            stub_request_certificate(csr.to_s, type)
-            stub_download_certificate(type)
+            stub_create_certificate(platform, type, csr.to_s, free: free)
+            stub_download_certificate(platform, type)
 
             allow(STDIN).to receive(:gets).and_return('y', "\n")
             expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq(certificate[:name])
           end
 
           it "can download a certificate that is installed locally" do
-            stub_existing_certificates
-            stub_download_certificate(type)
+            stub_list_certificates(platform, type, exists: true)
+            stub_download_certificate(platform, type)
 
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{platform}_#{type}_certificate.cer")
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{platform}_#{type}_private_key.p12")
