@@ -1,6 +1,8 @@
 require 'bundler/gem_tasks'
 require 'motion-provisioning'
 
+Rake::Task[:build].enhance [:build_export_private_key] # make sure export_private_key is compiled prior to Bundler's "build" task so that it can be included in the gem package
+
 begin
   require 'rspec/core/rake_task'
   RSpec::Core::RakeTask.new(:spec, :tag) do |t, task_args|
