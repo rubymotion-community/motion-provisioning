@@ -1,5 +1,16 @@
 describe "Certificates" do
 
+  def sha1_fingerprint(path)
+    result = `openssl x509 -in "#{path}" -inform der -noout -sha1 -fingerprint`
+    begin
+      result = result.match(/SHA1 Fingerprint=(.*)/)[1]
+      result.delete!(':')
+      return result
+    rescue
+      raise "Error parsing certificate '#{path}'"
+    end
+  end
+
   [:ios, :mac].each do |platform|
     describe platform.to_s do
       [:distribution, :development_free, :development].each do |type|
@@ -25,7 +36,7 @@ describe "Certificates" do
             MotionProvisioning::Certificate.new.import_file("spec/fixtures/#{platform}_#{type}_private_key.p12")
 
             allow(STDIN).to receive(:gets).and_return("\n")
-            expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq(certificate[:fingerprint])
+            expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq sha1_fingerprint("spec/fixtures/#{platform}_#{type}_certificate.cer")
           end
 
           it "can create new certificate revoking an existing one" do
@@ -37,7 +48,7 @@ describe "Certificates" do
             stub_download_certificate(platform, type)
 
             allow(STDIN).to receive(:gets).and_return('y', "\n")
-            expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq(certificate[:fingerprint])
+            expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq sha1_fingerprint("spec/fixtures/#{platform}_#{type}_certificate.cer")
           end
 
           it "can download a certificate that is installed locally" do
@@ -49,7 +60,7 @@ describe "Certificates" do
 
             allow($stderr).to receive(:noecho).and_yield
             allow(STDIN).to receive(:getc).and_return('1', '2', '3', "\n")
-            expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq(certificate[:fingerprint])
+            expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq sha1_fingerprint("#{MotionProvisioning.output_path}/#{platform}_#{type}_certificate.cer")
             expect(File.exist?("#{MotionProvisioning.output_path}/#{platform}_#{type}_certificate.cer")).to be true
             expect(File.exist?("#{MotionProvisioning.output_path}/#{platform}_#{type}_private_key.p12")).to be true
           end
@@ -58,7 +69,7 @@ describe "Certificates" do
             FileUtils.cp("spec/fixtures/#{platform}_#{type}_certificate.cer", MotionProvisioning.output_path)
             FileUtils.cp("spec/fixtures/#{platform}_#{type}_private_key.p12", MotionProvisioning.output_path)
 
-            expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq(certificate[:fingerprint])
+            expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq sha1_fingerprint("#{MotionProvisioning.output_path}/#{platform}_#{type}_certificate.cer")
           end
 
           it "can use cached certificate that is installed" do
@@ -67,7 +78,7 @@ describe "Certificates" do
             FileUtils.cp("spec/fixtures/#{platform}_#{type}_certificate.cer", MotionProvisioning.output_path)
             FileUtils.cp("spec/fixtures/#{platform}_#{type}_private_key.p12", MotionProvisioning.output_path)
 
-            expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq(certificate[:fingerprint])
+            expect(MotionProvisioning.certificate(platform: platform, type: type, free: free)).to eq sha1_fingerprint("#{MotionProvisioning.output_path}/#{platform}_#{type}_certificate.cer")
           end
         end
       end

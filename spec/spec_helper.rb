@@ -77,14 +77,12 @@ SPEC_CERTIFICATES = {
       type_id: "5QPB9NHCEI",
       name: "ios development: MotionProvisioning",
       content: fixture_file('ios_development_certificate.cer'),
-      fingerprint: "2CA548BBBB6F3EB9972A3A1D5273E6E80D6D9941",
     },
     distribution: {
       id: "67890",
       type_id: "R58UK2EWSO",
       name: "ios distribution: MotionProvisioning",
       content: fixture_file('ios_distribution_certificate.cer'),
-      fingerprint: "0F6D53C90077F5FF7B139CFAD0239C0FD8485C3B",
     }
   },
   mac: {
@@ -93,14 +91,12 @@ SPEC_CERTIFICATES = {
       type_id: "749Y1QAGU7",
       name: "mac development: MotionProvisioning",
       content: fixture_file('mac_development_certificate.cer'),
-      fingerprint: "39ED8989A7CC7569FC69AD0943CD7583BD3924BB",
     },
     distribution: {
       id: "67890",
       type_id: "HXZEUKP0FP",
       name: "mac distribution: MotionProvisioning",
       content: fixture_file('mac_distribution_certificate.cer'),
-      fingerprint: "7ACADEE9F85A611DCECFE9BA332DE35BCABD8B2B",
     }
   }
 }
