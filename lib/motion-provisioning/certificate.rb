@@ -83,6 +83,36 @@ module MotionProvisioning
           Utils.log("Error", "Something went wrong when trying to create a new certificate...")
           abort
         end
+      elsif ENV['recreate_certificate'] != nil
+        # Force recreate certificate, even though a valid certificate is already installed locally
+
+        if self.type == :distribution
+          answer = Utils.ask("Info", "There are #{certificates.count} distribution certificates in your account.\n" \
+                    "Before revoking and creating a new one, ask other team members who might have them installed to share them with you.\n" \
+                    "Do you want to revoke the existing certificates? (Y/n):")
+          if answer.yes?
+            certificates.each(&:revoke!)
+          end
+        else
+          answer = Utils.ask("Info", "You have #{certificates.count} development certificates in your account.\n" \
+                    "Do you want to revoke your existing certificates? (Y/n):")
+          if answer.yes?
+            if MotionProvisioning.free
+              certificates.each do |certificate|
+                client.revoke_development_certificate(certificate.motionprovisioning_serialNumber)
+              end
+            else
+              certificates.each(&:revoke!)
+            end
+          end
+        end
+
+        if certificate = create_certificate
+          return sha1_fingerprint(certificate)
+        else
+          Utils.log("Error", "Something went wrong when trying to create a new certificate.")
+          abort
+        end
       else
         # There are certificates on the server, and one of them is installed locally.
         Utils.log("Info", "Found certificate '#{installed_certificate.name}' which is installed in the local machine.")
