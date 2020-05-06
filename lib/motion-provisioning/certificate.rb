@@ -24,14 +24,13 @@ module MotionProvisioning
         installed_cert = identities.detect { |e| e[:fingerprint] == fingerprint }
         if installed_cert
           Utils.log("Info", "Using certificate '#{installed_cert[:name]}'.")
-          return installed_cert[:name]
+          return installed_cert[:fingerprint]
         else
           # The certificate is not installed, so we install the cert and the key
           import_file(private_key_path)
           import_file(certificate_path)
-          name = common_name(certificate_path)
-          Utils.log("Info", "Using certificate '#{name}'.")
-          return name
+          Utils.log("Info", "Using certificate '#{common_name(certificate_path)}'.")
+          return sha1_fingerprint(certificate_path)
         end
       end
 
@@ -52,7 +51,7 @@ module MotionProvisioning
         # There are no certificates in the server so we create a new one
         Utils.log("Warning", "Couldn't find any existing certificates... creating a new one.")
         if certificate = create_certificate
-          return common_name(certificate)
+          return sha1_fingerprint(certificate)
         else
           Utils.log("Error", "Something went wrong when trying to create a new certificate.")
           abort
@@ -79,7 +78,7 @@ module MotionProvisioning
         end
 
         if certificate = create_certificate
-          return common_name(certificate)
+          return sha1_fingerprint(certificate)
         else
           Utils.log("Error", "Something went wrong when trying to create a new certificate...")
           abort
@@ -97,7 +96,7 @@ module MotionProvisioning
         # This certificate is installed on the local machine
         Utils.log("Info", "Using certificate '#{installed_certificate.name}'.")
 
-        common_name(path)
+        sha1_fingerprint(path)
       end
     end
 
