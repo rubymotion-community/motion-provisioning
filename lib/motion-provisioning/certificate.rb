@@ -48,8 +48,8 @@ module MotionProvisioning
         end
       end
 
-      # There are no certificates in the server so we create a new one
       if certificates.empty?
+        # There are no certificates in the server so we create a new one
         Utils.log("Warning", "Couldn't find any existing certificates... creating a new one.")
         if certificate = create_certificate
           return common_name(certificate)
@@ -57,8 +57,8 @@ module MotionProvisioning
           Utils.log("Error", "Something went wrong when trying to create a new certificate.")
           abort
         end
-      # There are certificates in the server, but none are installed locally. Revoke all and create a new one.
       elsif installed_certificate.nil?
+        # There are certificates in the server, but none are installed locally. Revoke all and create a new one.
         Utils.log("Error", "None of the available certificates (#{certificates.count}) is installed on the local machine. Revoking...")
 
         # For distribution, ask before revoking
@@ -84,8 +84,8 @@ module MotionProvisioning
           Utils.log("Error", "Something went wrong when trying to create a new certificate...")
           abort
         end
-      # There are certificates on the server, and one of them is installed locally.
       else
+        # There are certificates on the server, and one of them is installed locally.
         Utils.log("Info", "Found certificate '#{installed_certificate.name}' which is installed in the local machine.")
 
         path = store_certificate_raw(installed_certificate.motionprovisioning_certContent || installed_certificate.download_raw)
@@ -191,9 +191,9 @@ module MotionProvisioning
       Utils.log("Info", "Successfully installed certificate.")
 
       if self.type == :distribution
-        Utils.log("Warning", "You have just created a distribution certificate. These certificates must be shared with other team members by sending them the private key (.p12) and certificate (.cer) files in your output folder and install them in the keychain.")
+        Utils.log("Warning", "You have just created a distribution certificate. These certificates must be shared with other team members by sending them the private key (.p12) and certificate (.cer) files in your 'provisioning' folder and install them in the keychain.")
       else
-        Utils.log("Warning", "You have just created a development certificate. If you want to use this certificate on another machine, transfer the private key (.p12) and certificate (.cer) files in your output folder and install them in the keychain.")
+        Utils.log("Warning", "You have just created a development certificate. If you want to use this certificate on another machine, transfer the private key (.p12) and certificate (.cer) files in your 'provisioning' folder and install them in the keychain.")
       end
       Utils.ask("Info", "Press any key to continue...")
 
