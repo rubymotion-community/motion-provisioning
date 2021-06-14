@@ -163,7 +163,7 @@ module MotionProvisioning
       when :mac
         cert_type = Spaceship.certificate.mac_development
         cert_type = Spaceship.certificate.mac_app_distribution if self.type == :distribution
-        cert_type = Spaceship.certificate.developer_i_d_application if self.type == :developer_id
+        cert_type = Spaceship.certificate.developer_id_application if self.type == :developer_id
       end
       cert_type
     end
