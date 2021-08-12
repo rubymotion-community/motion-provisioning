@@ -49,7 +49,7 @@ module MotionProvisioning
 
       if certificates.empty?
         # There are no certificates in the server so we create a new one
-        Utils.log("Warning", "Couldn't find any existing certificates... creating a new one.")
+        Utils.log("Warning", "Couldn't find any existing certificates. Creating a new certificate...")
         if certificate = create_certificate
           return sha1_fingerprint(certificate)
         else
@@ -58,12 +58,12 @@ module MotionProvisioning
         end
       elsif installed_certificate.nil?
         # There are certificates in the server, but none are installed locally. Revoke all and create a new one.
-        Utils.log("Error", "None of the available certificates (#{certificates.count}) is installed on the local machine. Revoking...")
+        Utils.log("Error", "None of the available certificates (#{certificates.count}) are installed locally. Revoking...")
 
         # For distribution, ask before revoking
         if self.type == :distribution
-          answer = Utils.ask("Info", "There are #{certificates.count} distribution certificates in your account, but none installed locally.\n" \
-                    "Before revoking and creating a new one, ask other team members who might have them installed to share them with you.\n" \
+          answer = Utils.ask("Info", "There #{certificates.count == 1 ? 'is 1' : "are #{certificates.count}"} distribution certificate(s) in your account, but none installed locally.\n" \
+                    "Before revoking and creating a new certificate, ask other team members who might have them installed to share them with you.\n" \
                     "Do you want to continue revoking the certificates? (Y/n):")
           abort if answer.no?
         end
