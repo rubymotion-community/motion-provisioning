@@ -170,6 +170,10 @@ After you create a new distribution certificate, share the
 corresponding `.cer` and `.p12` files located in the `provisioning`
 folder with your team members.
 
+After copying the files to the team member's `provisioning` directory,
+drag and drop the certificate file into the Keychain Access app's login
+keychain in order to install the certificate.
+
 ## Recreate certificates and profiles
 
 Once the certificates and profiles are cached in the `provisioning`
