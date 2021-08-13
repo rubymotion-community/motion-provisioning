@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
 
   # Spaceship depends on the `plist` and `security` gems which we use too
   spec.add_dependency 'highline', '>= 1.7.2', '< 2.0.0' # user inputs (e.g. passwords)
-  spec.add_dependency 'fastlane', '~> 2.113'
+  spec.add_dependency 'fastlane', '~> 2.113', '< 2.182' # fastlane 2.182 requires highline 2.0
 
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'rspec', '~> 3.1'
