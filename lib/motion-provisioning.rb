@@ -5,7 +5,6 @@ require 'date'
 
 require 'plist'
 require 'security'
-require 'highline/import'
 require 'spaceship'
 require 'motion-provisioning/spaceship/portal/certificate'
 require 'motion-provisioning/spaceship/portal_client'
