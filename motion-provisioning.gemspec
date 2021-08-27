@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{Simplified provisioning for RubyMotion iOS, tvOS and macOS apps.}
   spec.description   = %q{A small library that manages certificates and profiles automatically, from the command line, with minimal configuration.}
-  spec.homepage      = "https://github.com/HipByte/motion-provisioning"
+  spec.homepage      = "https://github.com/rubymotion-community/motion-provisioning"
   spec.license       = "BSD"
 
   spec.files = Dir.glob("lib/**/*", File::FNM_DOTMATCH) +
